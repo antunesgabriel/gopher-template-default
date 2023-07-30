@@ -6,7 +6,7 @@ type UserService struct {
 	repository UserRepository
 }
 
-func NewCreateUserUseCase(rep UserRepository) *UserService {
+func NewUserService(rep UserRepository) *UserService {
 	s := UserService{
 		repository: rep,
 	}

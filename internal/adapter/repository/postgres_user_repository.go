@@ -10,20 +10,19 @@ import (
 )
 
 type PostgresUserRepository struct {
-	query *database.Queries
+	*PostgresRepository
 }
 
-func NewPostgresUserRespository(db *sql.DB) *PostgresUserRepository {
-	q := database.New(db)
+func NewPostgresUserRespository(pr *PostgresRepository) *PostgresUserRepository {
 
 	p := PostgresUserRepository{
-		query: q,
+		PostgresRepository: pr,
 	}
 
 	return &p
 }
 
-func (p PostgresUserRepository) FindUserByEmail(
+func (p *PostgresUserRepository) FindUserByEmail(
 	ctx context.Context,
 	email string,
 ) (*user.User, error) {
@@ -44,7 +43,7 @@ func (p PostgresUserRepository) FindUserByEmail(
 	return usr, nil
 }
 
-func (p PostgresUserRepository) FindUserByID(ctx context.Context, id int64) (*user.User, error) {
+func (p *PostgresUserRepository) FindUserByID(ctx context.Context, id int64) (*user.User, error) {
 	u, err := p.query.GetUserByID(ctx, id)
 
 	if err != nil {
@@ -62,7 +61,7 @@ func (p PostgresUserRepository) FindUserByID(ctx context.Context, id int64) (*us
 	return usr, nil
 }
 
-func (p PostgresUserRepository) Create(ctx context.Context, u *user.User) error {
+func (p *PostgresUserRepository) Create(ctx context.Context, u *user.User) error {
 	if u.Password != "" {
 		_, err := p.query.CreateUserLocal(ctx, database.CreateUserLocalParams{
 			Name:  u.Name,
@@ -79,10 +78,10 @@ func (p PostgresUserRepository) Create(ctx context.Context, u *user.User) error 
 	return nil
 }
 
-func (p PostgresUserRepository) Update(ctx context.Context, u *user.User) (*user.User, error) {
+func (p *PostgresUserRepository) Update(ctx context.Context, u *user.User) (*user.User, error) {
 	return nil, nil
 }
 
-func (p PostgresUserRepository) Delete(ctx context.Context, u *user.User) error {
+func (p *PostgresUserRepository) Delete(ctx context.Context, u *user.User) error {
 	return nil
 }
