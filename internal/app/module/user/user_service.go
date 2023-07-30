@@ -15,7 +15,7 @@ func NewCreateUserUseCase(rep UserRepository) *UserService {
 }
 
 func (s *UserService) CreateLocal(ctx context.Context, name, email, password string) error {
-	u := New("", name, email, "", password)
+	u := New(0, name, email, "", password)
 
 	err := u.Validate()
 

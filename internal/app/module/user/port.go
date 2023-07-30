@@ -5,11 +5,11 @@ import "context"
 // Output
 
 type UserRepository interface {
-	FindUserByID(ctx context.Context, id string) (*user, error)
-	FindUserByEmail(ctx context.Context, email string) (*user, error)
-	Create(ctx context.Context, u *user) error
-	Update(ctx context.Context, u *user) (*user, error)
-	Delete(ctx context.Context, u *user) error
+	FindUserByID(ctx context.Context, id int64) (*User, error)
+	FindUserByEmail(ctx context.Context, email string) (*User, error)
+	Create(ctx context.Context, u *User) error
+	Update(ctx context.Context, u *User) (*User, error)
+	Delete(ctx context.Context, u *User) error
 }
 
 // Inputs

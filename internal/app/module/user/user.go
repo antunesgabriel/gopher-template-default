@@ -1,17 +1,22 @@
 package user
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
-type user struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Provider string `json:"provider,omitempty"`
-	Password string `json:"password,omitempty"`
+type User struct {
+	ID        int64      `json:"id"`
+	Name      string     `json:"name"`
+	Email     string     `json:"email"`
+	Provider  string     `json:"provider,omitempty"`
+	Password  string     `json:"password,omitempty"`
+	CreatedAt *time.Time `json:"created_at,omitempty"`
+	UpdatedAt *time.Time `json:"updated_at,omitempty"`
 }
 
-func New(id, name, email, provider, password string) *user {
-	u := user{
+func New(id int64, name, email, provider, password string) *User {
+	u := User{
 		ID:       id,
 		Name:     name,
 		Email:    email,
@@ -22,8 +27,8 @@ func New(id, name, email, provider, password string) *user {
 	return &u
 }
 
-func (u *user) Validate() error {
-	if u.ID == "" {
+func (u *User) Validate() error {
+	if u.ID == 0 {
 		return errors.New("")
 	}
 
