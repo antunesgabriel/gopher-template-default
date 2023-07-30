@@ -4,15 +4,31 @@ import (
 	"log"
 	"os"
 
+	"github.com/antunesgabriel/gopher-template-default/config"
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
 
-	if err != nil && os.Getenv("POSTGRES_DATABASE_CONNECTION") == "" {
-		log.Fatal("Error loading .env file")
+	if os.Getenv("APP_ENV") != "development" {
+		err := godotenv.Load()
+	
+		if err != nil {
+			log.Fatalln("Error loading .env file: ", err.Error())
+		}
 	}
 
-	log.Println("hello world!")
+	if os.Getenv("POSTGRES_DATABASE_CONNECTION") == "" {
+		log.Fatalln("POSTGRES_DATABASE_CONNECTION is required")
+	}
+
+	db, err := config.NewDB()
+
+	if err != nil {
+		log.Fatal("Error on connect db:", err.Error())
+	}
+
+	server := InitServer(db)
+
+	panic(server.Load().Run(os.Getenv("PORT")))
 }

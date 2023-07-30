@@ -6,10 +6,10 @@ package main
 import (
 	"database/sql"
 
-	"gihub.com/antunesgabriel/gopher-template-default/internal/adapter"
-	"gihub.com/antunesgabriel/gopher-template-default/internal/adapter/repository"
-	"gihub.com/antunesgabriel/gopher-template-default/internal/app"
-	"gihub.com/antunesgabriel/gopher-template-default/internal/app/module/user"
+	"github.com/antunesgabriel/gopher-template-default/internal/adapter"
+	"github.com/antunesgabriel/gopher-template-default/internal/adapter/repository"
+	"github.com/antunesgabriel/gopher-template-default/internal/app"
+	"github.com/antunesgabriel/gopher-template-default/internal/app/module/user"
 	"github.com/google/wire"
 )
 
@@ -19,7 +19,8 @@ var RepositorySet = wire.NewSet(
 )
 
 var ServiceSet = wire.NewSet(
-	wire.Bind(new(user.UserRepository, new(*repository.PostgresUserRepository))),
+	RepositorySet,
+	wire.Bind(new(user.UserRepository), new(*repository.PostgresUserRepository)),
 	user.NewUserService,
 )
 
@@ -28,17 +29,18 @@ var ControllerSet = wire.NewSet(
 )
 
 var ServerSet = wire.NewSet(
+	adapter.NewChiRouter,
 	wire.Bind(new(app.Router), new(*adapter.ChiRouter)),
 	app.NewServer,
 )
 
-func InitServer(db *sql.DB) (*app.Server, error) {
-	err := wire.Build(
-		RepositorySet,
+
+func InitServer(db *sql.DB) *app.Server {
+	wire.Build(
+		ServerSet,
 		ServiceSet,
 		ControllerSet,
-		ServerSet,
 	)
 
-	return &app.NewServer{}, err
+	return &app.Server{}
 }

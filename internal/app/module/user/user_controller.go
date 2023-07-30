@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"gihub.com/antunesgabriel/gopher-template-default/internal/app/shared"
+	"github.com/antunesgabriel/gopher-template-default/internal/app/shared"
 )
 
 type UserController struct {
@@ -54,4 +54,10 @@ func (c *UserController) StoreLocal(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Add("Content-Type", "application/json")
 	w.Write(resp)
+}
+
+func (c *UserController) Me(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Header().Add("Content-Type", "application/json")
+	w.Write([]byte("{\"up\": \"me\"}"))
 }

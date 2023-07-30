@@ -3,7 +3,7 @@ package repository
 import (
 	"database/sql"
 
-	"gihub.com/antunesgabriel/gopher-template-default/internal/adapter/database"
+	"github.com/antunesgabriel/gopher-template-default/internal/adapter/database"
 )
 
 type PostgresRepository struct {

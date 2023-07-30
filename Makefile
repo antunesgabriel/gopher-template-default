@@ -4,5 +4,5 @@ build:
 up:
 	docker compose up -d
 
-run-server:
+run:
 	go run ./cmd/server

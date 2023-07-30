@@ -2,8 +2,11 @@ package adapter
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 )
 
 type ChiRouter struct {
@@ -14,6 +17,22 @@ func NewChiRouter() *ChiRouter {
 	cr := ChiRouter{
 		mux: chi.NewRouter(),
 	}
+
+	origin := os.Getenv("APP_FRONT_ORIGIN")
+
+	// TODO: adapater this
+	cr.mux.Use(middleware.Logger)
+	cr.mux.Use(middleware.Heartbeat("/ping"))
+	cr.mux.Use(middleware.AllowContentType("application/json","text/xml"))
+	cr.mux.Use(
+		cors.Handler(cors.Options{
+		AllowedOrigins:   []string{origin},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+  	}))
 
 	return &cr
 }

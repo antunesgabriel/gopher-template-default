@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 
-	"gihub.com/antunesgabriel/gopher-template-default/internal/adapter/database"
-	"gihub.com/antunesgabriel/gopher-template-default/internal/app/module/user"
-	"gihub.com/antunesgabriel/gopher-template-default/internal/helper"
+	"github.com/antunesgabriel/gopher-template-default/internal/adapter/database"
+	"github.com/antunesgabriel/gopher-template-default/internal/app/module/user"
+	"github.com/antunesgabriel/gopher-template-default/internal/helper"
 )
 
 type PostgresUserRepository struct {

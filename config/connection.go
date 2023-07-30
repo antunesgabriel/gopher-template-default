@@ -7,18 +7,16 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var DB *sql.DB
-
-func NewDB() error {
+func NewDB() (*sql.DB, error) {
 	url := os.Getenv("POSTGRES_DATABASE_CONNECTION")
 
 	var err error
 
-	DB, err = sql.Open("postgres", url)
+	db, err := sql.Open("postgres", url)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return db, nil
 }
