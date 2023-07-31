@@ -12,14 +12,14 @@ func main() {
 
 	if os.Getenv("APP_ENV") != "development" {
 		err := godotenv.Load()
-	
+
 		if err != nil {
 			log.Fatalln("Error loading .env file: ", err.Error())
 		}
 	}
 
-	if os.Getenv("POSTGRES_DATABASE_CONNECTION") == "" {
-		log.Fatalln("POSTGRES_DATABASE_CONNECTION is required")
+	if os.Getenv("DATABASE_URL") == "" {
+		log.Fatalln("DATABASE_URL is required")
 	}
 
 	db, err := config.NewDB()

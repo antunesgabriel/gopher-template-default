@@ -8,7 +8,7 @@ import (
 )
 
 func NewDB() (*sql.DB, error) {
-	url := os.Getenv("POSTGRES_DATABASE_CONNECTION")
+	url := os.Getenv("DATABASE_URL")
 
 	var err error
 
