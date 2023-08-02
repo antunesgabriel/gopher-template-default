@@ -14,7 +14,9 @@ func NewUserService(rep UserRepository) *UserService {
 	return &s
 }
 
-func (s *UserService) CreateLocal(ctx context.Context, name, email, password string) error {
+func (s *UserService) CreateLocal(name, email, password string) error {
+	ctx := context.Background()
+
 	u := New(0, name, email, "", password)
 
 	err := u.Validate()

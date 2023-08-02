@@ -21,8 +21,6 @@ func NewUserController(userService *UserService) *UserController {
 }
 
 func (c *UserController) StoreLocal(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
 	dto := createUserLocalDTO{}
 
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
@@ -37,7 +35,7 @@ func (c *UserController) StoreLocal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := c.userService.CreateLocal(ctx, dto.Name, dto.Email, dto.Password); err != nil {
+	if err := c.userService.CreateLocal(dto.Name, dto.Email, dto.Password); err != nil {
 		log.Println("[ERROR]: ", err.Error())
 
 		resp, _ := shared.NewResponse(nil, err.Error()).ToByte()
