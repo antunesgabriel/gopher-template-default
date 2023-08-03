@@ -14,7 +14,7 @@ func NewHealthController(healthService *HealthService) *HealthController {
 	return &c
 }
 
-func (c *HealthController) CheckHealth(w http.ResponseWriter, _ http.Request) {
+func (c *HealthController) CheckHealth(w http.ResponseWriter, _ *http.Request) {
 	health, err := c.healthService.Check()
 
 	if err != nil {

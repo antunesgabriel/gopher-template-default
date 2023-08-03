@@ -11,6 +11,7 @@ import (
 	"github.com/antunesgabriel/gopher-template-default/internal/adapter"
 	"github.com/antunesgabriel/gopher-template-default/internal/adapter/repository"
 	"github.com/antunesgabriel/gopher-template-default/internal/app"
+	"github.com/antunesgabriel/gopher-template-default/internal/app/module/health"
 	"github.com/antunesgabriel/gopher-template-default/internal/app/module/user"
 	"github.com/google/wire"
 )
@@ -23,18 +24,21 @@ func InitServer(db *sql.DB) *app.Server {
 	postgresUserRepository := repository.NewPostgresUserRespository(postgresRepository)
 	userService := user.NewUserService(postgresUserRepository)
 	userController := user.NewUserController(userService)
-	server := app.NewServer(chiRouter, userController)
+	postgresHealthRepository := repository.NewPostgresHealthRepository(postgresRepository)
+	healthService := health.NewHealthService(postgresHealthRepository)
+	healthController := health.NewHealthController(healthService)
+	server := app.NewServer(chiRouter, userController, healthController)
 	return server
 }
 
 // wire.go:
 
-var RepositorySet = wire.NewSet(repository.NewPostgresRespository, repository.NewPostgresUserRespository)
+var RepositorySet = wire.NewSet(repository.NewPostgresRespository, repository.NewPostgresUserRespository, repository.NewPostgresHealthRepository)
 
 var ServiceSet = wire.NewSet(
-	RepositorySet, wire.Bind(new(user.UserRepository), new(*repository.PostgresUserRepository)), user.NewUserService,
+	RepositorySet, wire.Bind(new(user.UserRepository), new(*repository.PostgresUserRepository)), user.NewUserService, wire.Bind(new(health.HealthRepository), new(*repository.PostgresHealthRepository)), health.NewHealthService,
 )
 
-var ControllerSet = wire.NewSet(user.NewUserController)
+var ControllerSet = wire.NewSet(user.NewUserController, health.NewHealthController)
 
 var ServerSet = wire.NewSet(adapter.NewChiRouter, wire.Bind(new(app.Router), new(*adapter.ChiRouter)), app.NewServer)
