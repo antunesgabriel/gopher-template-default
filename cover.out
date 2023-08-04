@@ -1,4 +1,10 @@
 mode: set
+github.com/antunesgabriel/gopher-template-default/internal/application/usecase/check_health_usecase.go:13.88,19.2 2 1
+github.com/antunesgabriel/gopher-template-default/internal/application/usecase/check_health_usecase.go:21.47,25.2 2 1
+github.com/antunesgabriel/gopher-template-default/internal/application/usecase/create_local_user_usecase.go:14.94,20.2 2 0
+github.com/antunesgabriel/gopher-template-default/internal/application/usecase/create_local_user_usecase.go:22.79,29.16 4 0
+github.com/antunesgabriel/gopher-template-default/internal/application/usecase/create_local_user_usecase.go:29.16,31.3 1 0
+github.com/antunesgabriel/gopher-template-default/internal/application/usecase/create_local_user_usecase.go:33.2,35.12 2 0
 github.com/antunesgabriel/gopher-template-default/internal/domain/entity/user.go:21.66,31.2 2 1
 github.com/antunesgabriel/gopher-template-default/internal/domain/entity/user.go:33.46,34.18 1 1
 github.com/antunesgabriel/gopher-template-default/internal/domain/entity/user.go:34.18,36.3 1 1

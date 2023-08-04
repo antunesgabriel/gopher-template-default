@@ -21,9 +21,5 @@ func NewCheckHealthUseCase(repository repository.HealthRepository) *CheckHealthU
 func (it *CheckHealthUseCase) Execute() error {
 	ctx := context.Background()
 
-	if err := it.repository.Ping(ctx); err != nil {
-		return err
-	}
-
-	return nil
+	return it.repository.Ping(ctx)
 }
