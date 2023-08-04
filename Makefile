@@ -29,3 +29,6 @@ migrate-dev:
 
 new-migration:
 	go run ./cmd/migrate --action=$(action) --name=$(name)
+
+generate-wire:
+	go generate ./cmd/server

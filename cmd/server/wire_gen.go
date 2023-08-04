@@ -12,14 +12,14 @@ import (
 	"github.com/antunesgabriel/gopher-template-default/internal/application/usecase"
 	"github.com/antunesgabriel/gopher-template-default/internal/infra"
 	"github.com/antunesgabriel/gopher-template-default/internal/infra/pgrepository"
-	"github.com/antunesgabriel/gopher-template-default/internal/presentation"
-	"github.com/antunesgabriel/gopher-template-default/internal/presentation/controller"
+	"github.com/antunesgabriel/gopher-template-default/internal/interfaces/api"
+	"github.com/antunesgabriel/gopher-template-default/internal/interfaces/api/controller"
 	"github.com/google/wire"
 )
 
 // Injectors from wire.go:
 
-func InitServer(db *sql.DB) *presentation.Server {
+func InitServer(db *sql.DB) *api.Server {
 	chiRouter := infra.NewChiRouter()
 	postgresRepository := pgrepository.NewPostgresRepository(db)
 	postgresUserRepository := pgrepository.NewPostgresUserRepository(postgresRepository)
@@ -28,7 +28,7 @@ func InitServer(db *sql.DB) *presentation.Server {
 	postgresHealthRepository := pgrepository.NewPostgresHealthRepository(postgresRepository)
 	checkHealthUseCase := usecase.NewCheckHealthUseCase(postgresHealthRepository)
 	checkHealthController := controller.NewCheckHealthController(checkHealthUseCase)
-	server := presentation.NewServer(chiRouter, createLocalUserController, checkHealthController)
+	server := api.NewServer(chiRouter, createLocalUserController, checkHealthController)
 	return server
 }
 
@@ -42,4 +42,4 @@ var UseCaseSet = wire.NewSet(
 
 var ControllerSet = wire.NewSet(controller.NewCreateLocalUserController, controller.NewCheckHealthController)
 
-var ServerSet = wire.NewSet(infra.NewChiRouter, wire.Bind(new(presentation.Router), new(*infra.ChiRouter)), presentation.NewServer)
+var ServerSet = wire.NewSet(infra.NewChiRouter, wire.Bind(new(api.Router), new(*infra.ChiRouter)), api.NewServer)

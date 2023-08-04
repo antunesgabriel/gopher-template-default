@@ -5,13 +5,12 @@ package main
 
 import (
 	"database/sql"
-
 	"github.com/antunesgabriel/gopher-template-default/internal/application/repository"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/usecase"
 	"github.com/antunesgabriel/gopher-template-default/internal/infra"
 	"github.com/antunesgabriel/gopher-template-default/internal/infra/pgrepository"
-	"github.com/antunesgabriel/gopher-template-default/internal/presentation"
-	"github.com/antunesgabriel/gopher-template-default/internal/presentation/controller"
+	"github.com/antunesgabriel/gopher-template-default/internal/interfaces/api"
+	"github.com/antunesgabriel/gopher-template-default/internal/interfaces/api/controller"
 	"github.com/google/wire"
 )
 
@@ -36,16 +35,16 @@ var ControllerSet = wire.NewSet(
 
 var ServerSet = wire.NewSet(
 	infra.NewChiRouter,
-	wire.Bind(new(presentation.Router), new(*infra.ChiRouter)),
-	presentation.NewServer,
+	wire.Bind(new(api.Router), new(*infra.ChiRouter)),
+	api.NewServer,
 )
 
-func InitServer(db *sql.DB) *presentation.Server {
+func InitServer(db *sql.DB) *api.Server {
 	wire.Build(
 		ServerSet,
 		UseCaseSet,
 		ControllerSet,
 	)
 
-	return &presentation.Server{}
+	return &api.Server{}
 }
