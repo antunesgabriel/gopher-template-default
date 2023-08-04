@@ -2,6 +2,7 @@ package entity
 
 import (
 	"errors"
+	"net/mail"
 	"time"
 
 	"github.com/antunesgabriel/gopher-template-default/internal/domain/validation"
@@ -29,10 +30,26 @@ func New(id int64, name, email, provider, password string) *User {
 	return &u
 }
 
-func (u *User) Validate() error {
-	if u.Email == "" {
-		return errors.New(string(validation.EMAIL_IS_REQUIRED))
+func (u *User) CheckIfNewUserIsValid() error {
+	if u.Name == "" {
+		return errors.New(string(validation.NameIsRequired))
 	}
+
+	if u.Email == "" {
+		return errors.New(string(validation.EmailIsRequired))
+	}
+
+	if u.Provider == "" && u.Password == "" {
+		return errors.New(string(validation.PasswordOrProviderIsRequired))
+	}
+
+	addr, err := mail.ParseAddress(u.Email)
+
+	if err != nil {
+		return errors.New(string(validation.InvalidEmail))
+	}
+
+	u.Email = addr.Address
 
 	return nil
 }

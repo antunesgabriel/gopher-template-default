@@ -24,7 +24,7 @@ func (it *CreateLocalUserUseCase) Execute(name, email, password string) error {
 
 	u := entity.New(0, name, email, "", password)
 
-	err := u.Validate()
+	err := u.CheckIfNewUserIsValid()
 
 	if err != nil {
 		return err

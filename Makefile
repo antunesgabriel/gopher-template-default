@@ -32,3 +32,6 @@ new-migration:
 
 generate-wire:
 	go generate ./cmd/server
+
+test:
+	go test -coverprofile=cover.out ./...
