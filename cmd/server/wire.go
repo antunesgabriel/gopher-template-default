@@ -6,45 +6,46 @@ package main
 import (
 	"database/sql"
 
-	"github.com/antunesgabriel/gopher-template-default/internal/adapter"
-	"github.com/antunesgabriel/gopher-template-default/internal/adapter/repository"
-	"github.com/antunesgabriel/gopher-template-default/internal/app"
-	"github.com/antunesgabriel/gopher-template-default/internal/app/module/health"
-	"github.com/antunesgabriel/gopher-template-default/internal/app/module/user"
+	"github.com/antunesgabriel/gopher-template-default/internal/application/repository"
+	"github.com/antunesgabriel/gopher-template-default/internal/application/usecase"
+	"github.com/antunesgabriel/gopher-template-default/internal/infra"
+	"github.com/antunesgabriel/gopher-template-default/internal/infra/pgrepository"
+	"github.com/antunesgabriel/gopher-template-default/internal/presentation"
+	"github.com/antunesgabriel/gopher-template-default/internal/presentation/controller"
 	"github.com/google/wire"
 )
 
 var RepositorySet = wire.NewSet(
-	repository.NewPostgresRespository,
-	repository.NewPostgresUserRespository,
-	repository.NewPostgresHealthRepository,
+	pgrepository.NewPostgresRepository,
+	pgrepository.NewPostgresUserRepository,
+	pgrepository.NewPostgresHealthRepository,
 )
 
-var ServiceSet = wire.NewSet(
+var UseCaseSet = wire.NewSet(
 	RepositorySet,
-	wire.Bind(new(user.UserRepository), new(*repository.PostgresUserRepository)),
-	user.NewUserService,
-	wire.Bind(new(health.HealthRepository), new(*repository.PostgresHealthRepository)),
-	health.NewHealthService,
+	wire.Bind(new(repository.UserRepository), new(*pgrepository.PostgresUserRepository)),
+	usecase.NewCreateLocalUserUseCase,
+	wire.Bind(new(repository.HealthRepository), new(*pgrepository.PostgresHealthRepository)),
+	usecase.NewCheckHealthUseCase,
 )
 
 var ControllerSet = wire.NewSet(
-	user.NewUserController,
-	health.NewHealthController,
+	controller.NewCreateLocalUserController,
+	controller.NewCheckHealthController,
 )
 
 var ServerSet = wire.NewSet(
-	adapter.NewChiRouter,
-	wire.Bind(new(app.Router), new(*adapter.ChiRouter)),
-	app.NewServer,
+	infra.NewChiRouter,
+	wire.Bind(new(presentation.Router), new(*infra.ChiRouter)),
+	presentation.NewServer,
 )
 
-func InitServer(db *sql.DB) *app.Server {
+func InitServer(db *sql.DB) *presentation.Server {
 	wire.Build(
 		ServerSet,
-		ServiceSet,
+		UseCaseSet,
 		ControllerSet,
 	)
 
-	return &app.Server{}
+	return &presentation.Server{}
 }

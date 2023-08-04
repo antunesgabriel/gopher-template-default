@@ -1,8 +1,6 @@
-package health
+package repository
 
-import (
-	"context"
-)
+import "context"
 
 type HealthRepository interface {
 	Ping(ctx context.Context) error

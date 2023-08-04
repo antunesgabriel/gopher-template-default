@@ -1,19 +1,20 @@
-package repository
+package pgrepository
 
 import (
 	"context"
 	"database/sql"
 
-	"github.com/antunesgabriel/gopher-template-default/internal/adapter/database"
-	"github.com/antunesgabriel/gopher-template-default/internal/app/module/user"
+	"github.com/antunesgabriel/gopher-template-default/internal/domain/entity"
+
 	"github.com/antunesgabriel/gopher-template-default/internal/helper"
+	"github.com/antunesgabriel/gopher-template-default/internal/infra/database"
 )
 
 type PostgresUserRepository struct {
 	*PostgresRepository
 }
 
-func NewPostgresUserRespository(pr *PostgresRepository) *PostgresUserRepository {
+func NewPostgresUserRepository(pr *PostgresRepository) *PostgresUserRepository {
 
 	p := PostgresUserRepository{
 		PostgresRepository: pr,
@@ -25,14 +26,14 @@ func NewPostgresUserRespository(pr *PostgresRepository) *PostgresUserRepository 
 func (p *PostgresUserRepository) FindUserByEmail(
 	ctx context.Context,
 	email string,
-) (*user.User, error) {
+) (*entity.User, error) {
 	u, err := p.query.GetUserByEmail(ctx, email)
 
 	if err != nil {
 		return nil, err
 	}
 
-	usr := user.New(
+	usr := entity.New(
 		u.ID,
 		u.Name,
 		u.Email,
@@ -43,14 +44,14 @@ func (p *PostgresUserRepository) FindUserByEmail(
 	return usr, nil
 }
 
-func (p *PostgresUserRepository) FindUserByID(ctx context.Context, id int64) (*user.User, error) {
+func (p *PostgresUserRepository) FindUserByID(ctx context.Context, id int64) (*entity.User, error) {
 	u, err := p.query.GetUserByID(ctx, id)
 
 	if err != nil {
 		return nil, err
 	}
 
-	usr := user.New(
+	usr := entity.New(
 		u.ID,
 		u.Name,
 		u.Email,
@@ -61,7 +62,7 @@ func (p *PostgresUserRepository) FindUserByID(ctx context.Context, id int64) (*u
 	return usr, nil
 }
 
-func (p *PostgresUserRepository) Create(ctx context.Context, u *user.User) error {
+func (p *PostgresUserRepository) Create(ctx context.Context, u *entity.User) error {
 	if u.Password != "" {
 		_, err := p.query.CreateUserLocal(ctx, database.CreateUserLocalParams{
 			Name:  u.Name,
@@ -78,10 +79,10 @@ func (p *PostgresUserRepository) Create(ctx context.Context, u *user.User) error
 	return nil
 }
 
-func (p *PostgresUserRepository) Update(ctx context.Context, u *user.User) (*user.User, error) {
+func (p *PostgresUserRepository) Update(ctx context.Context, u *entity.User) (*entity.User, error) {
 	return nil, nil
 }
 
-func (p *PostgresUserRepository) Delete(ctx context.Context, u *user.User) error {
+func (p *PostgresUserRepository) Delete(ctx context.Context, u *entity.User) error {
 	return nil
 }

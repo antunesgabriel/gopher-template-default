@@ -8,37 +8,38 @@ package main
 
 import (
 	"database/sql"
-	"github.com/antunesgabriel/gopher-template-default/internal/adapter"
-	"github.com/antunesgabriel/gopher-template-default/internal/adapter/repository"
-	"github.com/antunesgabriel/gopher-template-default/internal/app"
-	"github.com/antunesgabriel/gopher-template-default/internal/app/module/health"
-	"github.com/antunesgabriel/gopher-template-default/internal/app/module/user"
+	"github.com/antunesgabriel/gopher-template-default/internal/application/repository"
+	"github.com/antunesgabriel/gopher-template-default/internal/application/usecase"
+	"github.com/antunesgabriel/gopher-template-default/internal/infra"
+	"github.com/antunesgabriel/gopher-template-default/internal/infra/pgrepository"
+	"github.com/antunesgabriel/gopher-template-default/internal/presentation"
+	"github.com/antunesgabriel/gopher-template-default/internal/presentation/controller"
 	"github.com/google/wire"
 )
 
 // Injectors from wire.go:
 
-func InitServer(db *sql.DB) *app.Server {
-	chiRouter := adapter.NewChiRouter()
-	postgresRepository := repository.NewPostgresRespository(db)
-	postgresUserRepository := repository.NewPostgresUserRespository(postgresRepository)
-	userService := user.NewUserService(postgresUserRepository)
-	userController := user.NewUserController(userService)
-	postgresHealthRepository := repository.NewPostgresHealthRepository(postgresRepository)
-	healthService := health.NewHealthService(postgresHealthRepository)
-	healthController := health.NewHealthController(healthService)
-	server := app.NewServer(chiRouter, userController, healthController)
+func InitServer(db *sql.DB) *presentation.Server {
+	chiRouter := infra.NewChiRouter()
+	postgresRepository := pgrepository.NewPostgresRepository(db)
+	postgresUserRepository := pgrepository.NewPostgresUserRepository(postgresRepository)
+	createLocalUserUseCase := usecase.NewCreateLocalUserUseCase(postgresUserRepository)
+	createLocalUserController := controller.NewCreateLocalUserController(createLocalUserUseCase)
+	postgresHealthRepository := pgrepository.NewPostgresHealthRepository(postgresRepository)
+	checkHealthUseCase := usecase.NewCheckHealthUseCase(postgresHealthRepository)
+	checkHealthController := controller.NewCheckHealthController(checkHealthUseCase)
+	server := presentation.NewServer(chiRouter, createLocalUserController, checkHealthController)
 	return server
 }
 
 // wire.go:
 
-var RepositorySet = wire.NewSet(repository.NewPostgresRespository, repository.NewPostgresUserRespository, repository.NewPostgresHealthRepository)
+var RepositorySet = wire.NewSet(pgrepository.NewPostgresRepository, pgrepository.NewPostgresUserRepository, pgrepository.NewPostgresHealthRepository)
 
-var ServiceSet = wire.NewSet(
-	RepositorySet, wire.Bind(new(user.UserRepository), new(*repository.PostgresUserRepository)), user.NewUserService, wire.Bind(new(health.HealthRepository), new(*repository.PostgresHealthRepository)), health.NewHealthService,
+var UseCaseSet = wire.NewSet(
+	RepositorySet, wire.Bind(new(repository.UserRepository), new(*pgrepository.PostgresUserRepository)), usecase.NewCreateLocalUserUseCase, wire.Bind(new(repository.HealthRepository), new(*pgrepository.PostgresHealthRepository)), usecase.NewCheckHealthUseCase,
 )
 
-var ControllerSet = wire.NewSet(user.NewUserController, health.NewHealthController)
+var ControllerSet = wire.NewSet(controller.NewCreateLocalUserController, controller.NewCheckHealthController)
 
-var ServerSet = wire.NewSet(adapter.NewChiRouter, wire.Bind(new(app.Router), new(*adapter.ChiRouter)), app.NewServer)
+var ServerSet = wire.NewSet(infra.NewChiRouter, wire.Bind(new(presentation.Router), new(*infra.ChiRouter)), presentation.NewServer)

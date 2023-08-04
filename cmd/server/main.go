@@ -1,10 +1,10 @@
 package main
 
 import (
+	"github.com/antunesgabriel/gopher-template-default/internal/config"
 	"log"
 	"os"
 
-	"github.com/antunesgabriel/gopher-template-default/config"
 	"github.com/joho/godotenv"
 )
 

@@ -1,4 +1,4 @@
-package adapter
+package infra
 
 import (
 	"net/http"
@@ -18,21 +18,20 @@ func NewChiRouter() *ChiRouter {
 		mux: chi.NewRouter(),
 	}
 
-	origin := os.Getenv("APP_FRONT_ORIGIN")
+	origin := os.Getenv("CLIENT_URL")
 
 	// TODO: adapater this
 	cr.mux.Use(middleware.Logger)
-	cr.mux.Use(middleware.Heartbeat("/ping"))
-	cr.mux.Use(middleware.AllowContentType("application/json","text/xml"))
+	cr.mux.Use(middleware.AllowContentType("application/json", "multipart/form-data"))
 	cr.mux.Use(
 		cors.Handler(cors.Options{
-		AllowedOrigins:   []string{origin},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: true,
-		MaxAge:           300,
-  	}))
+			AllowedOrigins:   []string{origin},
+			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
+			AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+			ExposedHeaders:   []string{"Link"},
+			AllowCredentials: true,
+			MaxAge:           300,
+		}))
 
 	return &cr
 }

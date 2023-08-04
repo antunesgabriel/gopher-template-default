@@ -1,8 +1,10 @@
-package user
+package entity
 
 import (
 	"errors"
 	"time"
+
+	"github.com/antunesgabriel/gopher-template-default/internal/domain/validation"
 )
 
 type User struct {
@@ -28,8 +30,8 @@ func New(id int64, name, email, provider, password string) *User {
 }
 
 func (u *User) Validate() error {
-	if u.ID == 0 {
-		return errors.New("")
+	if u.Email == "" {
+		return errors.New(string(validation.EMAIL_IS_REQUIRED))
 	}
 
 	return nil
