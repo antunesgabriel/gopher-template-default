@@ -22,9 +22,9 @@ func NewCreateLocalUserUseCase(repository repository.UserRepository) *CreateLoca
 func (it *CreateLocalUserUseCase) Execute(name, email, password string) error {
 	ctx := context.Background()
 
-	u := entity.New(0, name, email, "", password)
+	u := entity.NewUser(0, name, email, "", password)
 
-	err := u.CheckIfNewUserIsValid()
+	err := u.ValidateNewLocalUser()
 
 	if err != nil {
 		return err

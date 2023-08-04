@@ -18,7 +18,7 @@ type User struct {
 	UpdatedAt *time.Time `json:"updated_at,omitempty"`
 }
 
-func New(id int64, name, email, provider, password string) *User {
+func NewUser(id int64, name, email, provider, password string) *User {
 	u := User{
 		ID:       id,
 		Name:     name,
@@ -30,26 +30,46 @@ func New(id int64, name, email, provider, password string) *User {
 	return &u
 }
 
-func (u *User) CheckIfNewUserIsValid() error {
-	if u.Name == "" {
+func (it *User) validateRequiredFields() error {
+	if it.Name == "" {
 		return errors.New(string(validation.NameIsRequired))
 	}
 
-	if u.Email == "" {
+	if it.Email == "" {
 		return errors.New(string(validation.EmailIsRequired))
 	}
 
-	if u.Provider == "" && u.Password == "" {
-		return errors.New(string(validation.PasswordOrProviderIsRequired))
-	}
-
-	addr, err := mail.ParseAddress(u.Email)
+	addr, err := mail.ParseAddress(it.Email)
 
 	if err != nil {
 		return errors.New(string(validation.InvalidEmail))
 	}
 
-	u.Email = addr.Address
+	it.Email = addr.Address
+
+	return nil
+}
+
+func (it *User) ValidateNewLocalUser() error {
+	if err := it.validateRequiredFields(); err != nil {
+		return err
+	}
+
+	if it.Password == "" {
+		return errors.New(string(validation.PasswordIsRequired))
+	}
+
+	return nil
+}
+
+func (it *User) ValidateNewExternalUser() error {
+	if err := it.validateRequiredFields(); err != nil {
+		return err
+	}
+
+	if it.Provider == "" {
+		return errors.New(string(validation.ProviderIsRequired))
+	}
 
 	return nil
 }

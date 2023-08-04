@@ -1,18 +1,9 @@
 package usecase
 
 import (
-	"context"
 	"errors"
 	"testing"
 )
-
-type mockHealthRepository struct {
-	Return error
-}
-
-func (it *mockHealthRepository) Ping(ctx context.Context) error {
-	return it.Return
-}
 
 func TestCheckHealthUseCase(t *testing.T) {
 	t.Run("it should called HealthRepository correctly", func(t *testing.T) {

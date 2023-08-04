@@ -13,7 +13,7 @@ func TestUser(t *testing.T) {
 		provider := "github"
 		password := "secret"
 
-		u := New(id, name, email, provider, password)
+		u := NewUser(id, name, email, provider, password)
 
 		if u == nil {
 			t.Errorf("got %s want %s", "nil", "user instance")
@@ -36,7 +36,7 @@ func TestUser(t *testing.T) {
 		}
 	})
 
-	t.Run("CheckIfNewUserIsValid()", func(t *testing.T) {
+	t.Run("ValidateNewLocalUser()", func(t *testing.T) {
 
 		t.Run("it should returns error if new user name is empty", func(t *testing.T) {
 			id := int64(1)
@@ -45,11 +45,11 @@ func TestUser(t *testing.T) {
 			provider := "google"
 			password := "secrets"
 
-			inValidUser := New(id, "", email, provider, password)
-			validUser := New(id, name, email, provider, password)
+			inValidUser := NewUser(id, "", email, provider, password)
+			validUser := NewUser(id, name, email, provider, password)
 
-			expectedErr := inValidUser.CheckIfNewUserIsValid()
-			noExpectedErr := validUser.CheckIfNewUserIsValid()
+			expectedErr := inValidUser.ValidateNewLocalUser()
+			noExpectedErr := validUser.ValidateNewLocalUser()
 
 			if expectedErr == nil || expectedErr.Error() != string(validation.NameIsRequired) {
 				t.Errorf("got %s want %s", expectedErr, validation.NameIsRequired)
@@ -67,11 +67,11 @@ func TestUser(t *testing.T) {
 			provider := "google"
 			password := "secrets"
 
-			inValidUser := New(id, name, "", provider, password)
-			validUser := New(id, name, email, provider, password)
+			inValidUser := NewUser(id, name, "", provider, password)
+			validUser := NewUser(id, name, email, provider, password)
 
-			expectedErr := inValidUser.CheckIfNewUserIsValid()
-			noExpectedErr := validUser.CheckIfNewUserIsValid()
+			expectedErr := inValidUser.ValidateNewLocalUser()
+			noExpectedErr := validUser.ValidateNewLocalUser()
 
 			if expectedErr == nil || expectedErr.Error() != string(validation.EmailIsRequired) {
 				t.Errorf("got %s want %s", expectedErr, validation.EmailIsRequired)
@@ -82,21 +82,65 @@ func TestUser(t *testing.T) {
 			}
 		})
 
-		t.Run("it should returns error if password and provider are empty", func(t *testing.T) {
+		t.Run("if is local user it should return error if password is empty", func(t *testing.T) {
+			id := int64(1)
+			name := "Dias"
+			email := "dias@test.io"
+			provider := ""
+			password := "secrets"
+
+			inValidUser := NewUser(id, name, email, provider, "")
+			validUser := NewUser(id, name, email, provider, password)
+
+			expectedErr := inValidUser.ValidateNewLocalUser()
+			noExpectedErr := validUser.ValidateNewLocalUser()
+
+			if expectedErr == nil || expectedErr.Error() != string(validation.PasswordIsRequired) {
+				t.Errorf("got %s want %s", expectedErr, validation.PasswordIsRequired)
+			}
+
+			if noExpectedErr != nil {
+				t.Errorf("got %s want %s", noExpectedErr, "nil")
+			}
+		})
+
+		t.Run("if is local user it should return error if password is empty", func(t *testing.T) {
+			id := int64(1)
+			name := "Dias"
+			email := "dias@test.io"
+			provider := ""
+			password := "secrets"
+
+			inValidUser := NewUser(id, name, email, provider, "")
+			validUser := NewUser(id, name, email, provider, password)
+
+			expectedErr := inValidUser.ValidateNewLocalUser()
+			noExpectedErr := validUser.ValidateNewLocalUser()
+
+			if expectedErr == nil || expectedErr.Error() != string(validation.PasswordIsRequired) {
+				t.Errorf("got %s want %s", expectedErr, validation.PasswordIsRequired)
+			}
+
+			if noExpectedErr != nil {
+				t.Errorf("got %s want %s", noExpectedErr, "nil")
+			}
+		})
+
+		t.Run("if is external user it should return error if provider is empty", func(t *testing.T) {
 			id := int64(1)
 			name := "Dias"
 			email := "dias@test.io"
 			provider := "google"
-			password := "secrets"
+			password := ""
 
-			inValidUser := New(id, name, email, "", "")
-			validUser := New(id, name, email, provider, password)
+			inValidUser := NewUser(id, name, email, "", password)
+			validUser := NewUser(id, name, email, provider, password)
 
-			expectedErr := inValidUser.CheckIfNewUserIsValid()
-			noExpectedErr := validUser.CheckIfNewUserIsValid()
+			expectedErr := inValidUser.ValidateNewExternalUser()
+			noExpectedErr := validUser.ValidateNewExternalUser()
 
-			if expectedErr == nil || expectedErr.Error() != string(validation.PasswordOrProviderIsRequired) {
-				t.Errorf("got %s want %s", expectedErr, validation.PasswordOrProviderIsRequired)
+			if expectedErr == nil || expectedErr.Error() != string(validation.ProviderIsRequired) {
+				t.Errorf("got %s want %s", expectedErr, validation.ProviderIsRequired)
 			}
 
 			if noExpectedErr != nil {

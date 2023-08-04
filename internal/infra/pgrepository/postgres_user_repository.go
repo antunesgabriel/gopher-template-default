@@ -33,7 +33,7 @@ func (p *PostgresUserRepository) FindUserByEmail(
 		return nil, err
 	}
 
-	usr := entity.New(
+	usr := entity.NewUser(
 		u.ID,
 		u.Name,
 		u.Email,
@@ -51,7 +51,7 @@ func (p *PostgresUserRepository) FindUserByID(ctx context.Context, id int64) (*e
 		return nil, err
 	}
 
-	usr := entity.New(
+	usr := entity.NewUser(
 		u.ID,
 		u.Name,
 		u.Email,
