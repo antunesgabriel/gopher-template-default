@@ -1,0 +1,11 @@
+mode: set
+github.com/antunesgabriel/gopher-template-default/internal/domain/entity/user.go:21.66,31.2 2 1
+github.com/antunesgabriel/gopher-template-default/internal/domain/entity/user.go:33.46,34.18 1 1
+github.com/antunesgabriel/gopher-template-default/internal/domain/entity/user.go:34.18,36.3 1 1
+github.com/antunesgabriel/gopher-template-default/internal/domain/entity/user.go:38.2,38.19 1 1
+github.com/antunesgabriel/gopher-template-default/internal/domain/entity/user.go:38.19,40.3 1 1
+github.com/antunesgabriel/gopher-template-default/internal/domain/entity/user.go:42.2,42.42 1 1
+github.com/antunesgabriel/gopher-template-default/internal/domain/entity/user.go:42.42,44.3 1 1
+github.com/antunesgabriel/gopher-template-default/internal/domain/entity/user.go:46.2,48.16 2 1
+github.com/antunesgabriel/gopher-template-default/internal/domain/entity/user.go:48.16,50.3 1 0
+github.com/antunesgabriel/gopher-template-default/internal/domain/entity/user.go:52.2,54.12 2 1
