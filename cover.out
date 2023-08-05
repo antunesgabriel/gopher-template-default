@@ -1,4 +1,7 @@
 mode: set
+github.com/antunesgabriel/gopher-template-default/internal/application/dto/response.go:8.57,13.16 2 1
+github.com/antunesgabriel/gopher-template-default/internal/application/dto/response.go:13.16,15.3 1 1
+github.com/antunesgabriel/gopher-template-default/internal/application/dto/response.go:17.2,17.11 1 1
 github.com/antunesgabriel/gopher-template-default/internal/application/usecase/check_health_usecase.go:13.88,19.2 2 1
 github.com/antunesgabriel/gopher-template-default/internal/application/usecase/check_health_usecase.go:21.47,25.2 2 1
 github.com/antunesgabriel/gopher-template-default/internal/application/usecase/create_local_user_usecase.go:14.94,20.2 2 1

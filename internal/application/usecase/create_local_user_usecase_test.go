@@ -30,7 +30,7 @@ func TestCreateLocalUserUseCase(t *testing.T) {
 		}
 
 		for _, user := range mock.Users {
-			if user.Name == "wrong user" {
+			if user.Name == "invalid user" {
 				b, _ := json.Marshal(user)
 
 				t.Errorf("got %s want %s", b, "any user")
