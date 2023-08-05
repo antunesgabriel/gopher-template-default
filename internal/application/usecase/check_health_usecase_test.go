@@ -2,12 +2,13 @@ package usecase
 
 import (
 	"errors"
+	m "github.com/antunesgabriel/gopher-template-default/internal/mock"
 	"testing"
 )
 
 func TestCheckHealthUseCase(t *testing.T) {
 	t.Run("it should called HealthRepository correctly", func(t *testing.T) {
-		mock := mockHealthRepository{
+		mock := m.MockHealthRepository{
 			nil,
 		}
 

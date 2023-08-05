@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/antunesgabriel/gopher-template-default/internal/domain/entity"
 	"github.com/antunesgabriel/gopher-template-default/internal/domain/validation"
+	m "github.com/antunesgabriel/gopher-template-default/internal/mock"
 	"testing"
 )
 
@@ -13,7 +14,7 @@ func TestCreateLocalUserUseCase(t *testing.T) {
 		validUser := entity.NewUser(1, "amazing user", "example@email.io", "", "secret")
 		invalidUser := entity.NewUser(0, "invalid user", "invalid_email", "", "secret")
 
-		mock := mockUserRepository{
+		mock := m.MockUserRepository{
 			[]*entity.User{},
 		}
 
