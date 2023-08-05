@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/antunesgabriel/gopher-template-default/internal/domain/entity"
 	"github.com/antunesgabriel/gopher-template-default/internal/domain/validation"
-	m "github.com/antunesgabriel/gopher-template-default/internal/mock"
+	m "github.com/antunesgabriel/gopher-template-default/test/mock"
 	"testing"
 )
 

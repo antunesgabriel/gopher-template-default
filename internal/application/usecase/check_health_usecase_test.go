@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"errors"
-	m "github.com/antunesgabriel/gopher-template-default/internal/mock"
+	m "github.com/antunesgabriel/gopher-template-default/test/mock"
 	"testing"
 )
 
