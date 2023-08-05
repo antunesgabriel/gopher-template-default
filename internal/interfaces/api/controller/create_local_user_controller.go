@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/antunesgabriel/gopher-template-default/internal/application/dto"
@@ -23,28 +24,49 @@ func NewCreateLocalUserController(uc *usecase.CreateLocalUserUseCase) *CreateLoc
 func (it *CreateLocalUserController) Handle(w http.ResponseWriter, r *http.Request) {
 	input := dto.CreateUserLocalInput{}
 
-	w.Header().Add("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		resp, _ := dto.NewResponse(nil, err).ToByte()
+		response := dto.NewResponse(nil, err)
 
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write(resp)
+
+		err := json.NewEncoder(w).Encode(&response)
+
+		if err != nil {
+			log.Println(err)
+
+			w.Write([]byte(""))
+		}
 
 		return
 	}
 
 	if err := it.usecase.Execute(input.Name, input.Email, input.Password); err != nil {
-		resp, _ := dto.NewResponse(nil, err).ToByte()
+		response := dto.NewResponse(nil, err)
 
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write(resp)
+
+		err := json.NewEncoder(w).Encode(&response)
+
+		if err != nil {
+			log.Println(err)
+
+			w.Write([]byte(""))
+		}
 
 		return
 	}
 
-	resp, _ := dto.NewResponse(nil, nil).ToByte()
+	response := dto.NewResponse(nil, nil)
 
 	w.WriteHeader(http.StatusCreated)
-	w.Write(resp)
+
+	err := json.NewEncoder(w).Encode(&response)
+
+	if err != nil {
+		log.Println(err)
+
+		w.Write([]byte(""))
+	}
 }

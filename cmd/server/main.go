@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"github.com/antunesgabriel/gopher-template-default/internal/config"
 	"log"
 	"os"
@@ -27,6 +28,13 @@ func main() {
 	if err != nil {
 		log.Fatal("Error on connect db:", err.Error())
 	}
+
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(db)
 
 	server := InitServer(db)
 
