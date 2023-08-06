@@ -37,6 +37,7 @@ func (s *Server) Load() *Server {
 	log.Println("✅ /users is loaded")
 
 	s.router.ProtectedGroup("/private", func(r RouteGroup) {
+		// TODO: implement protected routes
 		r.Get("/", func(writer http.ResponseWriter, request *http.Request) {
 			writer.WriteHeader(http.StatusOK)
 			writer.Write([]byte("hello world"))
