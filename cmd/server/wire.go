@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/repository"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/usecase"
+	"github.com/antunesgabriel/gopher-template-default/internal/config"
 	"github.com/antunesgabriel/gopher-template-default/internal/delivery/api"
 	"github.com/antunesgabriel/gopher-template-default/internal/delivery/api/controller"
 	"github.com/antunesgabriel/gopher-template-default/internal/helper"
@@ -29,6 +30,7 @@ var UseCaseSet = wire.NewSet(
 	usecase.NewCreateLocalUserUseCase,
 	wire.Bind(new(repository.HealthRepository), new(*pgrepository.PostgresHealthRepository)),
 	usecase.NewCheckHealthUseCase,
+	// wire.Bind(new(helper.JWTHelper), new(*infra.ChiJWTHelper)),
 )
 
 var ControllerSet = wire.NewSet(
@@ -44,9 +46,10 @@ var ServerSet = wire.NewSet(
 
 var HelperSet = wire.NewSet(
 	infra.NewBcryptPasswordHelper,
+	infra.NewChiJWTHelper,
 )
 
-func InitServer(db *sql.DB) *api.Server {
+func InitServer(db *sql.DB, signKey config.SignKey) *api.Server {
 	wire.Build(
 		ServerSet,
 		UseCaseSet,

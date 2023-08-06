@@ -36,7 +36,9 @@ func main() {
 		}
 	}(db)
 
-	server := InitServer(db)
+	signKey := config.SignKey(os.Getenv("JWT_SIGN_KEY"))
+
+	server := InitServer(db, signKey)
 
 	panic(server.Load().Run(os.Getenv("PORT")))
 }

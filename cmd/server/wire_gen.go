@@ -10,6 +10,7 @@ import (
 	"database/sql"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/repository"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/usecase"
+	"github.com/antunesgabriel/gopher-template-default/internal/config"
 	"github.com/antunesgabriel/gopher-template-default/internal/delivery/api"
 	"github.com/antunesgabriel/gopher-template-default/internal/delivery/api/controller"
 	"github.com/antunesgabriel/gopher-template-default/internal/helper"
@@ -20,7 +21,7 @@ import (
 
 // Injectors from wire.go:
 
-func InitServer(db *sql.DB) *api.Server {
+func InitServer(db *sql.DB, signKey config.SignKey) *api.Server {
 	chiRouter := infra.NewChiRouter()
 	postgresRepository := pgrepository.NewPostgresRepository(db)
 	postgresUserRepository := pgrepository.NewPostgresUserRepository(postgresRepository)
@@ -46,4 +47,4 @@ var ControllerSet = wire.NewSet(controller.NewCreateLocalUserController, control
 
 var ServerSet = wire.NewSet(infra.NewChiRouter, wire.Bind(new(api.Router), new(*infra.ChiRouter)), api.NewServer)
 
-var HelperSet = wire.NewSet(infra.NewBcryptPasswordHelper)
+var HelperSet = wire.NewSet(infra.NewBcryptPasswordHelper, infra.NewChiJWTHelper)
