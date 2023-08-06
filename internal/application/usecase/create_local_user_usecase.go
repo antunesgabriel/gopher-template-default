@@ -25,6 +25,8 @@ func NewCreateLocalUserUseCase(repository repository.UserRepository, passwordHel
 func (it *CreateLocalUserUseCase) Execute(name, email, password string) error {
 	ctx := context.Background()
 
+	// TODO: check if user already exist
+
 	u := entity.NewUser(0, name, email, "", password)
 
 	err := u.ValidateNewLocalUser()

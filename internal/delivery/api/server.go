@@ -2,7 +2,7 @@ package api
 
 import (
 	"fmt"
-	controller2 "github.com/antunesgabriel/gopher-template-default/internal/interfaces/api/controller"
+	"github.com/antunesgabriel/gopher-template-default/internal/delivery/api/controller"
 	"log"
 	"net/http"
 	"os"
@@ -10,14 +10,14 @@ import (
 
 type Server struct {
 	router                    Router
-	createLocalUserController *controller2.CreateLocalUserController
-	checkHealthController     *controller2.CheckHealthController
+	createLocalUserController *controller.CreateLocalUserController
+	checkHealthController     *controller.CheckHealthController
 }
 
 func NewServer(
 	router Router,
-	CreateLocalUserController *controller2.CreateLocalUserController,
-	CheckHealthController *controller2.CheckHealthController,
+	CreateLocalUserController *controller.CreateLocalUserController,
+	CheckHealthController *controller.CheckHealthController,
 ) *Server {
 	s := Server{
 		router:                    router,

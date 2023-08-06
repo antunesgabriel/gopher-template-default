@@ -7,11 +7,11 @@ import (
 	"database/sql"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/repository"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/usecase"
+	"github.com/antunesgabriel/gopher-template-default/internal/delivery/api"
+	"github.com/antunesgabriel/gopher-template-default/internal/delivery/api/controller"
 	"github.com/antunesgabriel/gopher-template-default/internal/helper"
 	"github.com/antunesgabriel/gopher-template-default/internal/infra"
 	"github.com/antunesgabriel/gopher-template-default/internal/infra/pgrepository"
-	"github.com/antunesgabriel/gopher-template-default/internal/interfaces/api"
-	"github.com/antunesgabriel/gopher-template-default/internal/interfaces/api/controller"
 	"github.com/google/wire"
 )
 
