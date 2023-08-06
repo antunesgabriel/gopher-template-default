@@ -73,3 +73,7 @@ func (it *User) ValidateNewExternalUser() error {
 
 	return nil
 }
+
+func (it *User) ChangePassword(password string) {
+	it.Password = password
+}

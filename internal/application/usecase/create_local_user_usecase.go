@@ -2,18 +2,21 @@ package usecase
 
 import (
 	"context"
+	"github.com/antunesgabriel/gopher-template-default/internal/helper"
 
 	"github.com/antunesgabriel/gopher-template-default/internal/application/repository"
 	"github.com/antunesgabriel/gopher-template-default/internal/domain/entity"
 )
 
 type CreateLocalUserUseCase struct {
-	repository repository.UserRepository
+	repository     repository.UserRepository
+	passwordHelper helper.PasswordHelper
 }
 
-func NewCreateLocalUserUseCase(repository repository.UserRepository) *CreateLocalUserUseCase {
+func NewCreateLocalUserUseCase(repository repository.UserRepository, passwordHelper helper.PasswordHelper) *CreateLocalUserUseCase {
 	uc := CreateLocalUserUseCase{
-		repository: repository,
+		repository:     repository,
+		passwordHelper: passwordHelper,
 	}
 
 	return &uc
@@ -30,7 +33,13 @@ func (it *CreateLocalUserUseCase) Execute(name, email, password string) error {
 		return err
 	}
 
-	// TODO: encrypt user password
+	passBytes, err := it.passwordHelper.Hash(u.Password)
+
+	if err != nil {
+		return err
+	}
+
+	u.ChangePassword(string(passBytes))
 
 	err = it.repository.Create(ctx, u)
 

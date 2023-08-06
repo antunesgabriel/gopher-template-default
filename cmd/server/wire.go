@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/repository"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/usecase"
+	"github.com/antunesgabriel/gopher-template-default/internal/helper"
 	"github.com/antunesgabriel/gopher-template-default/internal/infra"
 	"github.com/antunesgabriel/gopher-template-default/internal/infra/pgrepository"
 	"github.com/antunesgabriel/gopher-template-default/internal/interfaces/api"
@@ -21,6 +22,8 @@ var RepositorySet = wire.NewSet(
 )
 
 var UseCaseSet = wire.NewSet(
+	HelperSet,
+	wire.Bind(new(helper.PasswordHelper), new(*infra.BcryptPasswordHelper)),
 	RepositorySet,
 	wire.Bind(new(repository.UserRepository), new(*pgrepository.PostgresUserRepository)),
 	usecase.NewCreateLocalUserUseCase,
@@ -37,6 +40,10 @@ var ServerSet = wire.NewSet(
 	infra.NewChiRouter,
 	wire.Bind(new(api.Router), new(*infra.ChiRouter)),
 	api.NewServer,
+)
+
+var HelperSet = wire.NewSet(
+	infra.NewBcryptPasswordHelper,
 )
 
 func InitServer(db *sql.DB) *api.Server {

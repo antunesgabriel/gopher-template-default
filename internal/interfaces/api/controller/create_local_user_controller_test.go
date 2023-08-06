@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/dto"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/usecase"
-	"github.com/antunesgabriel/gopher-template-default/internal/domain/entity"
 	"github.com/antunesgabriel/gopher-template-default/internal/domain/validation"
 	"github.com/antunesgabriel/gopher-template-default/test/mock"
 	"net/http"
@@ -100,11 +99,9 @@ func TestCreateLocalUserController_Handle(t *testing.T) {
 }
 
 func buildController() *CreateLocalUserController {
-	r := mock.MockUserRepository{
-		Users: []*entity.User{},
-	}
-
-	u := usecase.NewCreateLocalUserUseCase(&r)
+	r := mock.NewMockUserRepository()
+	h := mock.NewMockPasswordHelper("#4asd3", true)
+	u := usecase.NewCreateLocalUserUseCase(r, h)
 
 	controller := NewCreateLocalUserController(u)
 

@@ -148,4 +148,18 @@ func TestUser(t *testing.T) {
 			}
 		})
 	})
+
+	t.Run("ChangePassword() should change user password", func(t *testing.T) {
+		user := NewUser(42, "Octavianus Augustus", "octavianus@augustus.com", "", "first")
+
+		if user.Password != "first" {
+			t.Errorf("got %s want %s", user.Password, "first")
+		}
+
+		user.ChangePassword("roman")
+
+		if user.Password != "roman" {
+			t.Errorf("got %s want %s", user.Password, "roman")
+		}
+	})
 }

@@ -10,6 +10,7 @@ import (
 	"database/sql"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/repository"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/usecase"
+	"github.com/antunesgabriel/gopher-template-default/internal/helper"
 	"github.com/antunesgabriel/gopher-template-default/internal/infra"
 	"github.com/antunesgabriel/gopher-template-default/internal/infra/pgrepository"
 	"github.com/antunesgabriel/gopher-template-default/internal/interfaces/api"
@@ -23,7 +24,8 @@ func InitServer(db *sql.DB) *api.Server {
 	chiRouter := infra.NewChiRouter()
 	postgresRepository := pgrepository.NewPostgresRepository(db)
 	postgresUserRepository := pgrepository.NewPostgresUserRepository(postgresRepository)
-	createLocalUserUseCase := usecase.NewCreateLocalUserUseCase(postgresUserRepository)
+	bcryptPasswordHelper := infra.NewBcryptPasswordHelper()
+	createLocalUserUseCase := usecase.NewCreateLocalUserUseCase(postgresUserRepository, bcryptPasswordHelper)
 	createLocalUserController := controller.NewCreateLocalUserController(createLocalUserUseCase)
 	postgresHealthRepository := pgrepository.NewPostgresHealthRepository(postgresRepository)
 	checkHealthUseCase := usecase.NewCheckHealthUseCase(postgresHealthRepository)
@@ -37,9 +39,11 @@ func InitServer(db *sql.DB) *api.Server {
 var RepositorySet = wire.NewSet(pgrepository.NewPostgresRepository, pgrepository.NewPostgresUserRepository, pgrepository.NewPostgresHealthRepository)
 
 var UseCaseSet = wire.NewSet(
-	RepositorySet, wire.Bind(new(repository.UserRepository), new(*pgrepository.PostgresUserRepository)), usecase.NewCreateLocalUserUseCase, wire.Bind(new(repository.HealthRepository), new(*pgrepository.PostgresHealthRepository)), usecase.NewCheckHealthUseCase,
+	HelperSet, wire.Bind(new(helper.PasswordHelper), new(*infra.BcryptPasswordHelper)), RepositorySet, wire.Bind(new(repository.UserRepository), new(*pgrepository.PostgresUserRepository)), usecase.NewCreateLocalUserUseCase, wire.Bind(new(repository.HealthRepository), new(*pgrepository.PostgresHealthRepository)), usecase.NewCheckHealthUseCase,
 )
 
 var ControllerSet = wire.NewSet(controller.NewCreateLocalUserController, controller.NewCheckHealthController)
 
 var ServerSet = wire.NewSet(infra.NewChiRouter, wire.Bind(new(api.Router), new(*infra.ChiRouter)), api.NewServer)
+
+var HelperSet = wire.NewSet(infra.NewBcryptPasswordHelper)
