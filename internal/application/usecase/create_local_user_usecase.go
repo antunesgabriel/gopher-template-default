@@ -30,6 +30,8 @@ func (it *CreateLocalUserUseCase) Execute(name, email, password string) error {
 		return err
 	}
 
+	// TODO: encrypt user password
+
 	err = it.repository.Create(ctx, u)
 
 	return err

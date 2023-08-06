@@ -33,5 +33,5 @@ new-migration:
 generate-wire:
 	go generate ./cmd/server
 
-test:
+run-test:
 	go test -cover ./...

@@ -33,8 +33,8 @@ func (s *Server) Load() *Server {
 
 	log.Println("✅ /health is loaded")
 
-	s.router.Post("/user", s.createLocalUserController.Handle)
-	log.Println("✅ /user is loaded")
+	s.router.Post("/users", s.createLocalUserController.Handle)
+	log.Println("✅ /users is loaded")
 
 	return s
 }

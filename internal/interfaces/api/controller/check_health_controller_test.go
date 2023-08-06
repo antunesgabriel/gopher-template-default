@@ -20,12 +20,12 @@ func TestCheckHealthController_Handle(t *testing.T) {
 
 		rr := httptest.NewRecorder()
 
-		usecaseDBUp := newMockUseCase(nil)
-		controller := NewCheckHealthController(usecaseDBUp)
+		ucDBUp := newMockUseCase(nil)
+		controller := NewCheckHealthController(ucDBUp)
 
 		controller.Handle(rr, req)
 
-		response := controllerResponse{}
+		response := checkHealthControllerResponse{}
 
 		err = json.NewDecoder(rr.Body).Decode(&response)
 
@@ -54,10 +54,10 @@ func TestCheckHealthController_Handle(t *testing.T) {
 
 		rr := httptest.NewRecorder()
 
-		response := controllerResponse{}
+		response := checkHealthControllerResponse{}
 
-		usecaseDBDown := newMockUseCase(errors.New("db_down"))
-		controller := NewCheckHealthController(usecaseDBDown)
+		usDBDown := newMockUseCase(errors.New("db_down"))
+		controller := NewCheckHealthController(usDBDown)
 
 		controller.Handle(rr, req)
 
@@ -85,7 +85,7 @@ type upField struct {
 	Up bool `json:"up"`
 }
 
-type controllerResponse struct {
+type checkHealthControllerResponse struct {
 	Error string  `json:"error,omitempty"`
 	Data  upField `json:"data,omitempty"`
 }
