@@ -42,7 +42,7 @@ func (it *CreateLocalUserController) Handle(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	if err := it.usecase.Execute(input.Name, input.Email, input.Password); err != nil {
+	if err := it.usecase.Execute(&input); err != nil {
 		response := dto.NewResponse(nil, err)
 
 		w.WriteHeader(http.StatusBadRequest)

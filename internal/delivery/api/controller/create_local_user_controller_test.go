@@ -50,8 +50,8 @@ func TestCreateLocalUserController_Handle(t *testing.T) {
 			t.Errorf("got %d want %d", rr.Code, http.StatusBadRequest)
 		}
 
-		if response.Error != domain.InvalidEmail.Error() {
-			t.Errorf("got %s want %s", response.Error, domain.InvalidEmail)
+		if response.Error != domain.InvalidEmailError.Error() {
+			t.Errorf("got %s want %s", response.Error, domain.InvalidEmailError)
 		}
 	})
 

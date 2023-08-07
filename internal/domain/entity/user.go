@@ -30,17 +30,17 @@ func NewUser(id int64, name, email, provider, password string) *User {
 
 func (it *User) validateRequiredFields() error {
 	if it.Name == "" {
-		return domain.NameIsRequired
+		return domain.NameIsRequiredError
 	}
 
 	if it.Email == "" {
-		return domain.EmailIsRequired
+		return domain.EmailIsRequiredError
 	}
 
 	addr, err := mail.ParseAddress(it.Email)
 
 	if err != nil {
-		return domain.InvalidEmail
+		return domain.InvalidEmailError
 	}
 
 	it.Email = addr.Address
@@ -54,7 +54,7 @@ func (it *User) ValidateNewLocalUser() error {
 	}
 
 	if it.Password == "" {
-		return domain.PasswordIsRequired
+		return domain.PasswordIsRequiredError
 	}
 
 	return nil
@@ -66,7 +66,7 @@ func (it *User) ValidateNewExternalUser() error {
 	}
 
 	if it.Provider == "" {
-		return domain.ProviderIsRequired
+		return domain.ProviderIsRequiredError
 	}
 
 	return nil

@@ -67,8 +67,8 @@ func TestAuthLocalController_Handle(t *testing.T) {
 			t.Errorf("got %s want %s", err, "no error expected")
 		}
 
-		if response.Error != domain.InvalidPassword.Error() {
-			t.Errorf("got %s want %s", response.Error, domain.InvalidFields.Error())
+		if response.Error != domain.InvalidPasswordError.Error() {
+			t.Errorf("got %s want %s", response.Error, domain.InvalidFieldsError.Error())
 		}
 	})
 

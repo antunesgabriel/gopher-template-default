@@ -3,6 +3,7 @@ package usecase
 import (
 	"encoding/json"
 	"errors"
+	"github.com/antunesgabriel/gopher-template-default/internal/application/dto"
 	"github.com/antunesgabriel/gopher-template-default/internal/domain"
 	"github.com/antunesgabriel/gopher-template-default/internal/domain/entity"
 	"github.com/antunesgabriel/gopher-template-default/test/mock"
@@ -11,8 +12,17 @@ import (
 
 func TestCreateLocalUserUseCase(t *testing.T) {
 	t.Run("it should not send invalid users to the repository", func(t *testing.T) {
-		validUser := entity.NewUser(1, "amazing user", "example@email.io", "", "secret")
-		invalidUser := entity.NewUser(0, "invalid user", "invalid_email", "", "secret")
+		validUser := dto.CreateUserLocalInput{
+			Name:     "Valid User",
+			Email:    "valid@email.com",
+			Password: "password",
+		}
+
+		invalidUser := dto.CreateUserLocalInput{
+			Name:     "Invalid User",
+			Email:    "its_not_a_email",
+			Password: "password",
+		}
 
 		mockRepository := mock.NewMockUserRepository()
 
@@ -20,11 +30,11 @@ func TestCreateLocalUserUseCase(t *testing.T) {
 
 		uc := NewCreateLocalUserUseCase(mockRepository, mockHelper)
 
-		if err := uc.Execute(invalidUser.Name, invalidUser.Email, invalidUser.Password); err == nil || !errors.Is(err, domain.InvalidEmail) {
-			t.Errorf("got %s want %s", err, domain.InvalidEmail)
+		if err := uc.Execute(&invalidUser); err == nil || !errors.Is(err, domain.InvalidEmailError) {
+			t.Errorf("got %s want %s", err, domain.InvalidEmailError)
 		}
 
-		if err := uc.Execute(validUser.Name, validUser.Email, validUser.Password); err != nil {
+		if err := uc.Execute(&validUser); err != nil {
 			t.Errorf("got %s want %s", err, "no error expected")
 		}
 
@@ -38,7 +48,11 @@ func TestCreateLocalUserUseCase(t *testing.T) {
 	})
 
 	t.Run("it should encrypt user password before pass to repository", func(t *testing.T) {
-		userInput := entity.NewUser(7, "Archimedes", "archimedes@gopher.io", "", "eureka")
+		userInput := dto.CreateUserLocalInput{
+			Name:     "Archimedes",
+			Email:    "archimedes@gopher.io",
+			Password: "eureka",
+		}
 
 		mockRepository := mock.NewMockUserRepository()
 
@@ -46,7 +60,7 @@ func TestCreateLocalUserUseCase(t *testing.T) {
 
 		uc := NewCreateLocalUserUseCase(mockRepository, mockHelper)
 
-		if err := uc.Execute(userInput.Name, userInput.Email, userInput.Password); err != nil {
+		if err := uc.Execute(&userInput); err != nil {
 			t.Errorf("got %s want %s", err, "no error expected")
 		}
 
@@ -65,5 +79,27 @@ func TestCreateLocalUserUseCase(t *testing.T) {
 		if storedUser.Password != string(mockHelper.Hashed) {
 			t.Errorf("got %s want %s", storedUser.Password, string(mockHelper.Hashed))
 		}
+	})
+
+	t.Run("it should return error UserAlreadyExistError if user already exist", func(t *testing.T) {
+		mockRepository := mock.NewMockUserRepository()
+
+		email := "mouse@email.com"
+
+		mockRepository.Users = []*entity.User{
+			entity.NewUser(3, "Mouse", email, "", "password"),
+		}
+
+		mockHelper := mock.NewMockPasswordHelper("#4asd3", true)
+
+		userInput := dto.CreateUserLocalInput{
+			Name:     "Another Mouse",
+			Email:    email,
+			Password: "password",
+		}
+
+		uc := NewCreateLocalUserUseCase(mockRepository, mockHelper)
+
+		uc.Execute(&userInput)
 	})
 }

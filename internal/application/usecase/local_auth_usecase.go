@@ -35,17 +35,17 @@ func (it *LocalAuthUseCase) Execute(input dto.LocalAuthInput) (string, error) {
 	}
 
 	if user == nil {
-		return "", domain.UserIsNotRegister
+		return "", domain.UserIsNotRegisterError
 	}
 
 	if user.Password == "" {
-		return "", domain.UserIsNotLocal
+		return "", domain.UserIsNotLocalError
 	}
 
 	err = it.passwordHelper.Compare(input.Password, user.Password)
 
 	if err != nil {
-		return "", domain.InvalidPassword
+		return "", domain.InvalidPasswordError
 	}
 
 	payload := map[string]interface{}{

@@ -3,13 +3,14 @@ package domain
 import "errors"
 
 var (
-	EmailIsRequired    error = errors.New("email_is_required")
-	InvalidEmail       error = errors.New("invalid_email")
-	NameIsRequired     error = errors.New("name_is_required")
-	PasswordIsRequired error = errors.New("password_is_required")
-	ProviderIsRequired error = errors.New("provider_is_required")
-	UserIsNotRegister  error = errors.New("user_is_not_register")
-	UserIsNotLocal     error = errors.New("user_is_not_local")
-	InvalidPassword    error = errors.New("invalid_password")
-	InvalidFields      error = errors.New("invalid_fields")
+	EmailIsRequiredError    error = errors.New("email_is_required")
+	InvalidEmailError       error = errors.New("invalid_email")
+	NameIsRequiredError     error = errors.New("name_is_required")
+	PasswordIsRequiredError error = errors.New("password_is_required")
+	ProviderIsRequiredError error = errors.New("provider_is_required")
+	UserIsNotRegisterError  error = errors.New("user_is_not_register")
+	UserIsNotLocalError     error = errors.New("user_is_not_local")
+	InvalidPasswordError    error = errors.New("invalid_password")
+	InvalidFieldsError      error = errors.New("invalid_fields")
+	UserAlreadyExistError   error = errors.New("invalid_fields")
 )

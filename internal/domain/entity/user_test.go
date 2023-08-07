@@ -52,8 +52,8 @@ func TestUser(t *testing.T) {
 			expectedErr := inValidUser.ValidateNewLocalUser()
 			noExpectedErr := validUser.ValidateNewLocalUser()
 
-			if expectedErr == nil || !errors.Is(expectedErr, domain.NameIsRequired) {
-				t.Errorf("got %s want %s", expectedErr, domain.NameIsRequired)
+			if expectedErr == nil || !errors.Is(expectedErr, domain.NameIsRequiredError) {
+				t.Errorf("got %s want %s", expectedErr, domain.NameIsRequiredError)
 			}
 
 			if noExpectedErr != nil {
@@ -74,8 +74,8 @@ func TestUser(t *testing.T) {
 			expectedErr := inValidUser.ValidateNewLocalUser()
 			noExpectedErr := validUser.ValidateNewLocalUser()
 
-			if expectedErr == nil || !errors.Is(expectedErr, domain.EmailIsRequired) {
-				t.Errorf("got %s want %s", expectedErr, domain.EmailIsRequired)
+			if expectedErr == nil || !errors.Is(expectedErr, domain.EmailIsRequiredError) {
+				t.Errorf("got %s want %s", expectedErr, domain.EmailIsRequiredError)
 			}
 
 			if noExpectedErr != nil {
@@ -96,8 +96,8 @@ func TestUser(t *testing.T) {
 			expectedErr := inValidUser.ValidateNewLocalUser()
 			noExpectedErr := validUser.ValidateNewLocalUser()
 
-			if expectedErr == nil || !errors.Is(expectedErr, domain.PasswordIsRequired) {
-				t.Errorf("got %s want %s", expectedErr, domain.PasswordIsRequired)
+			if expectedErr == nil || !errors.Is(expectedErr, domain.PasswordIsRequiredError) {
+				t.Errorf("got %s want %s", expectedErr, domain.PasswordIsRequiredError)
 			}
 
 			if noExpectedErr != nil {
@@ -118,8 +118,8 @@ func TestUser(t *testing.T) {
 			expectedErr := inValidUser.ValidateNewLocalUser()
 			noExpectedErr := validUser.ValidateNewLocalUser()
 
-			if expectedErr == nil || !errors.Is(expectedErr, domain.PasswordIsRequired) {
-				t.Errorf("got %s want %s", expectedErr, domain.PasswordIsRequired)
+			if expectedErr == nil || !errors.Is(expectedErr, domain.PasswordIsRequiredError) {
+				t.Errorf("got %s want %s", expectedErr, domain.PasswordIsRequiredError)
 			}
 
 			if noExpectedErr != nil {
@@ -140,8 +140,8 @@ func TestUser(t *testing.T) {
 			expectedErr := inValidUser.ValidateNewExternalUser()
 			noExpectedErr := validUser.ValidateNewExternalUser()
 
-			if expectedErr == nil || !errors.Is(expectedErr, domain.ProviderIsRequired) {
-				t.Errorf("got %s want %s", expectedErr, domain.ProviderIsRequired)
+			if expectedErr == nil || !errors.Is(expectedErr, domain.ProviderIsRequiredError) {
+				t.Errorf("got %s want %s", expectedErr, domain.ProviderIsRequiredError)
 			}
 
 			if noExpectedErr != nil {

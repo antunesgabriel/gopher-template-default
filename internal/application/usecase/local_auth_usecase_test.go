@@ -10,7 +10,7 @@ import (
 )
 
 func TestLocalAuthUseCase_Execute(t *testing.T) {
-	t.Run("it should return error UserIsNotRegister user no exist", func(t *testing.T) {
+	t.Run("it should return error UserIsNotRegisterError user no exist", func(t *testing.T) {
 		user := entity.NewUser(1, "Jhon", "jhon@doe.com", "", "secret")
 
 		users := []*entity.User{
@@ -26,12 +26,12 @@ func TestLocalAuthUseCase_Execute(t *testing.T) {
 
 		_, err := uc.Execute(input)
 
-		if !errors.Is(err, domain.UserIsNotRegister) {
-			t.Errorf("got %s want %s", err, domain.UserIsNotRegister)
+		if !errors.Is(err, domain.UserIsNotRegisterError) {
+			t.Errorf("got %s want %s", err, domain.UserIsNotRegisterError)
 		}
 	})
 
-	t.Run("it should return error UserIsNotLocal when user is not local", func(t *testing.T) {
+	t.Run("it should return error UserIsNotLocalError when user is not local", func(t *testing.T) {
 		externalUser := entity.NewUser(1, "Jhon", "jhon@doe.com", "google", "")
 
 		users := []*entity.User{
@@ -47,12 +47,12 @@ func TestLocalAuthUseCase_Execute(t *testing.T) {
 
 		_, err := uc.Execute(input)
 
-		if !errors.Is(err, domain.UserIsNotLocal) {
-			t.Errorf("got %s want %s", err, domain.UserIsNotLocal)
+		if !errors.Is(err, domain.UserIsNotLocalError) {
+			t.Errorf("got %s want %s", err, domain.UserIsNotLocalError)
 		}
 	})
 
-	t.Run("it should return error InvalidPassword when password is invalid", func(t *testing.T) {
+	t.Run("it should return error InvalidPasswordError when password is invalid", func(t *testing.T) {
 		password := "correct"
 
 		externalUser := entity.NewUser(1, "Jhon", "jhon@doe.com", "", password)
@@ -70,8 +70,8 @@ func TestLocalAuthUseCase_Execute(t *testing.T) {
 
 		_, err := uc.Execute(input)
 
-		if !errors.Is(err, domain.InvalidPassword) {
-			t.Errorf("got %s want %s", err, domain.InvalidPassword)
+		if !errors.Is(err, domain.InvalidPasswordError) {
+			t.Errorf("got %s want %s", err, domain.InvalidPasswordError)
 		}
 
 		input = dto.LocalAuthInput{
@@ -81,8 +81,8 @@ func TestLocalAuthUseCase_Execute(t *testing.T) {
 
 		_, err = uc.Execute(input)
 
-		if errors.Is(err, domain.InvalidPassword) {
-			t.Errorf("got %s want %s", "no error", domain.InvalidPassword)
+		if errors.Is(err, domain.InvalidPasswordError) {
+			t.Errorf("got %s want %s", "no error", domain.InvalidPasswordError)
 		}
 	})
 
