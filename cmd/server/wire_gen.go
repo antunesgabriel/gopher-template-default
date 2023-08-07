@@ -22,7 +22,7 @@ import (
 // Injectors from wire.go:
 
 func InitServer(db *sql.DB, signKey config.SignKey) *api.Server {
-	chiRouter := infra.NewChiRouter()
+	chiRouter := infra.NewChiRouter(signKey)
 	postgresRepository := pgrepository.NewPostgresRepository(db)
 	postgresUserRepository := pgrepository.NewPostgresUserRepository(postgresRepository)
 	bcryptPasswordHelper := infra.NewBcryptPasswordHelper()

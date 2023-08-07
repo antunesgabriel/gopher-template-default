@@ -1,6 +1,7 @@
 package infra
 
 import (
+	"github.com/antunesgabriel/gopher-template-default/internal/config"
 	"github.com/antunesgabriel/gopher-template-default/internal/delivery/api"
 	"github.com/go-chi/cors"
 	"net/http"
@@ -16,8 +17,8 @@ type ChiRouter struct {
 	tokenAuth *jwtauth.JWTAuth
 }
 
-func NewChiRouter() *ChiRouter {
-	tokenAuth := jwtauth.New("HS256", []byte(os.Getenv("SECRET")), nil)
+func NewChiRouter(signKey config.SignKey) *ChiRouter {
+	tokenAuth := jwtauth.New("HS256", []byte(string(signKey)), nil)
 
 	cr := ChiRouter{
 		mux:       chi.NewRouter(),

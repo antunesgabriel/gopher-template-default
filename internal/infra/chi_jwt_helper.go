@@ -11,7 +11,7 @@ type ChiJWTHelper struct {
 }
 
 func NewChiJWTHelper(signKey config.SignKey) *ChiJWTHelper {
-	tokenAuth := jwtauth.New("HS256", []byte(signKey), nil)
+	tokenAuth := jwtauth.New("HS256", []byte(string(signKey)), nil)
 
 	h := ChiJWTHelper{
 		tokenAuth: tokenAuth,
