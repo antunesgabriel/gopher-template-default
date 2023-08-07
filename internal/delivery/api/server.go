@@ -12,17 +12,21 @@ type Server struct {
 	router                    Router
 	createLocalUserController *controller.CreateLocalUserController
 	checkHealthController     *controller.CheckHealthController
+	authLocalController       *controller.AuthLocalController
 }
 
 func NewServer(
 	router Router,
-	CreateLocalUserController *controller.CreateLocalUserController,
-	CheckHealthController *controller.CheckHealthController,
+	createLocalUserController *controller.CreateLocalUserController,
+	checkHealthController *controller.CheckHealthController,
+	authLocalController *controller.AuthLocalController,
+
 ) *Server {
 	s := Server{
 		router:                    router,
-		createLocalUserController: CreateLocalUserController,
-		checkHealthController:     CheckHealthController,
+		createLocalUserController: createLocalUserController,
+		checkHealthController:     checkHealthController,
+		authLocalController:       authLocalController,
 	}
 
 	return &s
@@ -35,6 +39,9 @@ func (s *Server) Load() *Server {
 
 	s.router.Post("/users", s.createLocalUserController.Handle)
 	log.Println("✅ /users is loaded")
+
+	s.router.Post("/auth/local", s.authLocalController.Handle)
+	log.Println("✅ /auth/local is loaded")
 
 	s.router.ProtectedGroup("/private", func(r RouteGroup) {
 		// TODO: implement protected routes

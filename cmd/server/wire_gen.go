@@ -31,7 +31,10 @@ func InitServer(db *sql.DB, signKey config.SignKey) *api.Server {
 	postgresHealthRepository := pgrepository.NewPostgresHealthRepository(postgresRepository)
 	checkHealthUseCase := usecase.NewCheckHealthUseCase(postgresHealthRepository)
 	checkHealthController := controller.NewCheckHealthController(checkHealthUseCase)
-	server := api.NewServer(chiRouter, createLocalUserController, checkHealthController)
+	chiJWTHelper := infra.NewChiJWTHelper(signKey)
+	localAuthUseCase := usecase.NewLocalAuthUseCase(postgresUserRepository, chiJWTHelper, bcryptPasswordHelper)
+	authLocalController := controller.NewAuthLocalController(localAuthUseCase)
+	server := api.NewServer(chiRouter, createLocalUserController, checkHealthController, authLocalController)
 	return server
 }
 
@@ -40,10 +43,10 @@ func InitServer(db *sql.DB, signKey config.SignKey) *api.Server {
 var RepositorySet = wire.NewSet(pgrepository.NewPostgresRepository, pgrepository.NewPostgresUserRepository, pgrepository.NewPostgresHealthRepository)
 
 var UseCaseSet = wire.NewSet(
-	HelperSet, wire.Bind(new(helper.PasswordHelper), new(*infra.BcryptPasswordHelper)), RepositorySet, wire.Bind(new(repository.UserRepository), new(*pgrepository.PostgresUserRepository)), usecase.NewCreateLocalUserUseCase, wire.Bind(new(repository.HealthRepository), new(*pgrepository.PostgresHealthRepository)), usecase.NewCheckHealthUseCase,
+	HelperSet, wire.Bind(new(helper.PasswordHelper), new(*infra.BcryptPasswordHelper)), RepositorySet, wire.Bind(new(repository.UserRepository), new(*pgrepository.PostgresUserRepository)), usecase.NewCreateLocalUserUseCase, wire.Bind(new(repository.HealthRepository), new(*pgrepository.PostgresHealthRepository)), usecase.NewCheckHealthUseCase, wire.Bind(new(helper.JWTHelper), new(*infra.ChiJWTHelper)), usecase.NewLocalAuthUseCase,
 )
 
-var ControllerSet = wire.NewSet(controller.NewCreateLocalUserController, controller.NewCheckHealthController)
+var ControllerSet = wire.NewSet(controller.NewCreateLocalUserController, controller.NewCheckHealthController, controller.NewAuthLocalController)
 
 var ServerSet = wire.NewSet(infra.NewChiRouter, wire.Bind(new(api.Router), new(*infra.ChiRouter)), api.NewServer)
 

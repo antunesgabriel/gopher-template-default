@@ -30,12 +30,14 @@ var UseCaseSet = wire.NewSet(
 	usecase.NewCreateLocalUserUseCase,
 	wire.Bind(new(repository.HealthRepository), new(*pgrepository.PostgresHealthRepository)),
 	usecase.NewCheckHealthUseCase,
-	// wire.Bind(new(helper.JWTHelper), new(*infra.ChiJWTHelper)),
+	wire.Bind(new(helper.JWTHelper), new(*infra.ChiJWTHelper)),
+	usecase.NewLocalAuthUseCase,
 )
 
 var ControllerSet = wire.NewSet(
 	controller.NewCreateLocalUserController,
 	controller.NewCheckHealthController,
+	controller.NewAuthLocalController,
 )
 
 var ServerSet = wire.NewSet(

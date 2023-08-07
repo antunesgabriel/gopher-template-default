@@ -2,6 +2,7 @@ package infra
 
 import (
 	"context"
+	"github.com/antunesgabriel/gopher-template-default/internal/config"
 	"github.com/go-chi/jwtauth/v5"
 )
 
@@ -9,7 +10,7 @@ type ChiJWTHelper struct {
 	tokenAuth *jwtauth.JWTAuth
 }
 
-func NewChiJWTHelper(signKey string) *ChiJWTHelper {
+func NewChiJWTHelper(signKey config.SignKey) *ChiJWTHelper {
 	tokenAuth := jwtauth.New("HS256", []byte(signKey), nil)
 
 	h := ChiJWTHelper{
