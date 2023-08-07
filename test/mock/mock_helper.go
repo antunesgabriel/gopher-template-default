@@ -1,6 +1,9 @@
 package mock
 
-import "errors"
+import (
+	"context"
+	"errors"
+)
 
 type mockPasswordHelper struct {
 	Hashed  []byte
@@ -26,4 +29,28 @@ func (it *mockPasswordHelper) Compare(_ string, __ string) error {
 	}
 
 	return errors.New("wrong")
+}
+
+type mockJWTHelper struct {
+	id    int
+	token string
+}
+
+func NewMockJWTHelper(id int, token string) *mockJWTHelper {
+	m := mockJWTHelper{
+		id,
+		token,
+	}
+
+	return &m
+}
+
+func (it *mockJWTHelper) Encode(_ map[string]interface{}) (string, error) {
+
+	return it.token, nil
+}
+
+func (it *mockJWTHelper) GetUserID(_ context.Context) (int, error) {
+
+	return it.id, nil
 }

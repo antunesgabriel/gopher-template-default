@@ -1,7 +1,8 @@
 package entity
 
 import (
-	"github.com/antunesgabriel/gopher-template-default/internal/domain/validation"
+	"errors"
+	"github.com/antunesgabriel/gopher-template-default/internal/domain"
 	"testing"
 )
 
@@ -51,8 +52,8 @@ func TestUser(t *testing.T) {
 			expectedErr := inValidUser.ValidateNewLocalUser()
 			noExpectedErr := validUser.ValidateNewLocalUser()
 
-			if expectedErr == nil || expectedErr.Error() != string(validation.NameIsRequired) {
-				t.Errorf("got %s want %s", expectedErr, validation.NameIsRequired)
+			if expectedErr == nil || !errors.Is(expectedErr, domain.NameIsRequired) {
+				t.Errorf("got %s want %s", expectedErr, domain.NameIsRequired)
 			}
 
 			if noExpectedErr != nil {
@@ -73,8 +74,8 @@ func TestUser(t *testing.T) {
 			expectedErr := inValidUser.ValidateNewLocalUser()
 			noExpectedErr := validUser.ValidateNewLocalUser()
 
-			if expectedErr == nil || expectedErr.Error() != string(validation.EmailIsRequired) {
-				t.Errorf("got %s want %s", expectedErr, validation.EmailIsRequired)
+			if expectedErr == nil || !errors.Is(expectedErr, domain.EmailIsRequired) {
+				t.Errorf("got %s want %s", expectedErr, domain.EmailIsRequired)
 			}
 
 			if noExpectedErr != nil {
@@ -95,8 +96,8 @@ func TestUser(t *testing.T) {
 			expectedErr := inValidUser.ValidateNewLocalUser()
 			noExpectedErr := validUser.ValidateNewLocalUser()
 
-			if expectedErr == nil || expectedErr.Error() != string(validation.PasswordIsRequired) {
-				t.Errorf("got %s want %s", expectedErr, validation.PasswordIsRequired)
+			if expectedErr == nil || !errors.Is(expectedErr, domain.PasswordIsRequired) {
+				t.Errorf("got %s want %s", expectedErr, domain.PasswordIsRequired)
 			}
 
 			if noExpectedErr != nil {
@@ -117,8 +118,8 @@ func TestUser(t *testing.T) {
 			expectedErr := inValidUser.ValidateNewLocalUser()
 			noExpectedErr := validUser.ValidateNewLocalUser()
 
-			if expectedErr == nil || expectedErr.Error() != string(validation.PasswordIsRequired) {
-				t.Errorf("got %s want %s", expectedErr, validation.PasswordIsRequired)
+			if expectedErr == nil || !errors.Is(expectedErr, domain.PasswordIsRequired) {
+				t.Errorf("got %s want %s", expectedErr, domain.PasswordIsRequired)
 			}
 
 			if noExpectedErr != nil {
@@ -139,8 +140,8 @@ func TestUser(t *testing.T) {
 			expectedErr := inValidUser.ValidateNewExternalUser()
 			noExpectedErr := validUser.ValidateNewExternalUser()
 
-			if expectedErr == nil || expectedErr.Error() != string(validation.ProviderIsRequired) {
-				t.Errorf("got %s want %s", expectedErr, validation.ProviderIsRequired)
+			if expectedErr == nil || !errors.Is(expectedErr, domain.ProviderIsRequired) {
+				t.Errorf("got %s want %s", expectedErr, domain.ProviderIsRequired)
 			}
 
 			if noExpectedErr != nil {

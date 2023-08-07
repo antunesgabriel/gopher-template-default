@@ -1,11 +1,9 @@
 package entity
 
 import (
-	"errors"
+	"github.com/antunesgabriel/gopher-template-default/internal/domain"
 	"net/mail"
 	"time"
-
-	"github.com/antunesgabriel/gopher-template-default/internal/domain/validation"
 )
 
 type User struct {
@@ -32,17 +30,17 @@ func NewUser(id int64, name, email, provider, password string) *User {
 
 func (it *User) validateRequiredFields() error {
 	if it.Name == "" {
-		return errors.New(string(validation.NameIsRequired))
+		return domain.NameIsRequired
 	}
 
 	if it.Email == "" {
-		return errors.New(string(validation.EmailIsRequired))
+		return domain.EmailIsRequired
 	}
 
 	addr, err := mail.ParseAddress(it.Email)
 
 	if err != nil {
-		return errors.New(string(validation.InvalidEmail))
+		return domain.InvalidEmail
 	}
 
 	it.Email = addr.Address
@@ -56,7 +54,7 @@ func (it *User) ValidateNewLocalUser() error {
 	}
 
 	if it.Password == "" {
-		return errors.New(string(validation.PasswordIsRequired))
+		return domain.PasswordIsRequired
 	}
 
 	return nil
@@ -68,7 +66,7 @@ func (it *User) ValidateNewExternalUser() error {
 	}
 
 	if it.Provider == "" {
-		return errors.New(string(validation.ProviderIsRequired))
+		return domain.ProviderIsRequired
 	}
 
 	return nil

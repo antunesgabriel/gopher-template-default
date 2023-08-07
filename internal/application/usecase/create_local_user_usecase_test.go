@@ -3,8 +3,8 @@ package usecase
 import (
 	"encoding/json"
 	"errors"
+	"github.com/antunesgabriel/gopher-template-default/internal/domain"
 	"github.com/antunesgabriel/gopher-template-default/internal/domain/entity"
-	"github.com/antunesgabriel/gopher-template-default/internal/domain/validation"
 	"github.com/antunesgabriel/gopher-template-default/test/mock"
 	"testing"
 )
@@ -20,14 +20,12 @@ func TestCreateLocalUserUseCase(t *testing.T) {
 
 		uc := NewCreateLocalUserUseCase(mockRepository, mockHelper)
 
-		expectedErr := errors.New(string(validation.InvalidEmail))
-
-		if err := uc.Execute(invalidUser.Name, invalidUser.Email, invalidUser.Password); err == nil || err.Error() != expectedErr.Error() {
-			t.Errorf("got %s want %s", err, expectedErr)
+		if err := uc.Execute(invalidUser.Name, invalidUser.Email, invalidUser.Password); err == nil || !errors.Is(err, domain.InvalidEmail) {
+			t.Errorf("got %s want %s", err, domain.InvalidEmail)
 		}
 
 		if err := uc.Execute(validUser.Name, validUser.Email, validUser.Password); err != nil {
-			t.Errorf("got %s want %s", err, expectedErr)
+			t.Errorf("got %s want %s", err, "no error expected")
 		}
 
 		for _, user := range mockRepository.Users {

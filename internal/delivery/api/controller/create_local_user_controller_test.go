@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/dto"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/usecase"
-	"github.com/antunesgabriel/gopher-template-default/internal/domain/validation"
+	"github.com/antunesgabriel/gopher-template-default/internal/domain"
 	"github.com/antunesgabriel/gopher-template-default/test/mock"
 	"net/http"
 	"net/http/httptest"
@@ -50,8 +50,8 @@ func TestCreateLocalUserController_Handle(t *testing.T) {
 			t.Errorf("got %d want %d", rr.Code, http.StatusBadRequest)
 		}
 
-		if response.Error != string(validation.InvalidEmail) {
-			t.Errorf("got %s want %s", response.Error, string(validation.InvalidEmail))
+		if response.Error != domain.InvalidEmail.Error() {
+			t.Errorf("got %s want %s", response.Error, domain.InvalidEmail)
 		}
 	})
 
