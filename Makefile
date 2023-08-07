@@ -34,4 +34,4 @@ generate-wire:
 	go generate ./cmd/server
 
 run-test:
-	go test -cover ./...
+	go test $$(go list ./... | grep -v /test/ | grep -v /mock/) -cover

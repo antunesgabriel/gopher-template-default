@@ -11,4 +11,5 @@ var (
 	UserIsNotRegister  error = errors.New("user_is_not_register")
 	UserIsNotLocal     error = errors.New("user_is_not_local")
 	InvalidPassword    error = errors.New("invalid_password")
+	InvalidFields      error = errors.New("invalid_fields")
 )
