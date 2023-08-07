@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/dto"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/repository"
+	"github.com/antunesgabriel/gopher-template-default/internal/domain"
 	"github.com/antunesgabriel/gopher-template-default/internal/helper"
 	"time"
 )
@@ -35,17 +35,17 @@ func (it *LocalAuthUseCase) Execute(input dto.LocalAuthInput) (string, error) {
 	}
 
 	if user == nil {
-		return "", errors.New("user_not_exist")
+		return "", domain.UserIsNotRegister
 	}
 
 	if user.Password == "" {
-		return "", errors.New("user_not_have_password")
+		return "", domain.UserIsNotLocal
 	}
 
 	err = it.passwordHelper.Compare(input.Password, user.Password)
 
 	if err != nil {
-		return "", errors.New("invalid_password")
+		return "", domain.InvalidPassword
 	}
 
 	payload := map[string]interface{}{

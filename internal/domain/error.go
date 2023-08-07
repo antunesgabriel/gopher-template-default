@@ -8,5 +8,7 @@ var (
 	NameIsRequired     error = errors.New("name_is_required")
 	PasswordIsRequired error = errors.New("password_is_required")
 	ProviderIsRequired error = errors.New("provider_is_required")
-	UserIsNotRegister  error = errors.New("user_is_no_register")
+	UserIsNotRegister  error = errors.New("user_is_not_register")
+	UserIsNotLocal     error = errors.New("user_is_not_local")
+	InvalidPassword    error = errors.New("invalid_password")
 )

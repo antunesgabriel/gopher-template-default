@@ -13,7 +13,13 @@ func (it *mockUserRepository) FindUserByID(ctx context.Context, id int64) (*enti
 	return nil, nil
 }
 
-func (it *mockUserRepository) FindUserByEmail(ctx context.Context, email string) (*entity.User, error) {
+func (it *mockUserRepository) FindUserByEmail(_ context.Context, email string) (*entity.User, error) {
+	for _, user := range it.Users {
+		if user.Email == email {
+			return user, nil
+		}
+	}
+
 	return nil, nil
 }
 

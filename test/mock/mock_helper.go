@@ -23,8 +23,8 @@ func (it *mockPasswordHelper) Hash(_ string) ([]byte, error) {
 	return it.Hashed, nil
 }
 
-func (it *mockPasswordHelper) Compare(_ string, __ string) error {
-	if it.IsEqual {
+func (it *mockPasswordHelper) Compare(password, hashedPassword string) error {
+	if it.IsEqual || password == hashedPassword {
 		return nil
 	}
 
