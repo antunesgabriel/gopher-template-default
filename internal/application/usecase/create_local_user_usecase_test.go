@@ -100,6 +100,8 @@ func TestCreateLocalUserUseCase(t *testing.T) {
 
 		uc := NewCreateLocalUserUseCase(mockRepository, mockHelper)
 
-		uc.Execute(&userInput)
+		if err := uc.Execute(&userInput); err == nil || !errors.Is(err, domain.UserAlreadyExistError) {
+			t.Errorf("got %s want %s", err, domain.UserAlreadyExistError)
+		}
 	})
 }

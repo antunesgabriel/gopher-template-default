@@ -12,5 +12,5 @@ var (
 	UserIsNotLocalError     error = errors.New("user_is_not_local")
 	InvalidPasswordError    error = errors.New("invalid_password")
 	InvalidFieldsError      error = errors.New("invalid_fields")
-	UserAlreadyExistError   error = errors.New("invalid_fields")
+	UserAlreadyExistError   error = errors.New("user_already_exist")
 )

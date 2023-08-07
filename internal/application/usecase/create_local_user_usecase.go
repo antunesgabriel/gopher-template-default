@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/dto"
+	"github.com/antunesgabriel/gopher-template-default/internal/domain"
 	"github.com/antunesgabriel/gopher-template-default/internal/helper"
 
 	"github.com/antunesgabriel/gopher-template-default/internal/application/repository"
@@ -26,11 +27,15 @@ func NewCreateLocalUserUseCase(repository repository.UserRepository, passwordHel
 func (it *CreateLocalUserUseCase) Execute(input *dto.CreateUserLocalInput) error {
 	ctx := context.Background()
 
-	// TODO: check if user already exist
+	exist, err := it.repository.FindUserByEmail(ctx, input.Email)
+
+	if exist != nil {
+		return domain.UserAlreadyExistError
+	}
 
 	u := entity.NewUser(0, input.Name, input.Email, "", input.Password)
 
-	err := u.ValidateNewLocalUser()
+	err = u.ValidateNewLocalUser()
 
 	if err != nil {
 		return err
