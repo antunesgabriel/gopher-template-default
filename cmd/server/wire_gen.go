@@ -21,8 +21,8 @@ import (
 
 // Injectors from wire.go:
 
-func InitServer(db *sql.DB, signKey config.SignKey) *api.Server {
-	chiRouter := infra.NewChiRouter(signKey)
+func InitServer(db *sql.DB, env *config.Env) *api.Server {
+	chiRouter := infra.NewChiRouter(env)
 	postgresRepository := pgrepository.NewPostgresRepository(db)
 	postgresUserRepository := pgrepository.NewPostgresUserRepository(postgresRepository)
 	bcryptPasswordHelper := infra.NewBcryptPasswordHelper()
@@ -31,10 +31,10 @@ func InitServer(db *sql.DB, signKey config.SignKey) *api.Server {
 	postgresHealthRepository := pgrepository.NewPostgresHealthRepository(postgresRepository)
 	checkHealthUseCase := usecase.NewCheckHealthUseCase(postgresHealthRepository)
 	checkHealthController := controller.NewCheckHealthController(checkHealthUseCase)
-	chiJWTHelper := infra.NewChiJWTHelper(signKey)
+	chiJWTHelper := infra.NewChiJWTHelper(env)
 	localAuthUseCase := usecase.NewLocalAuthUseCase(postgresUserRepository, chiJWTHelper, bcryptPasswordHelper)
 	authLocalController := controller.NewAuthLocalController(localAuthUseCase)
-	server := api.NewServer(chiRouter, createLocalUserController, checkHealthController, authLocalController)
+	server := api.NewServer(env, chiRouter, createLocalUserController, checkHealthController, authLocalController)
 	return server
 }
 

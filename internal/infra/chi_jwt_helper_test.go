@@ -2,10 +2,13 @@ package infra
 
 import (
 	"context"
+	"github.com/antunesgabriel/gopher-template-default/internal/config"
 	"github.com/go-chi/jwtauth/v5"
 	"testing"
 	"time"
 )
+
+var EnvPath = "../../"
 
 func TestChiJWTHelper_Encode(t *testing.T) {
 	t.Run("it should generate token with correct claims", func(t *testing.T) {
@@ -15,7 +18,13 @@ func TestChiJWTHelper_Encode(t *testing.T) {
 			"id":  42,
 		}
 
-		helper := NewChiJWTHelper("vasco")
+		env, err := config.NewEnv(EnvPath)
+
+		if err != nil {
+			t.Errorf("got %s want %s", err, "no expected error")
+		}
+
+		helper := NewChiJWTHelper(env)
 
 		token, err := helper.Encode(claimsInput)
 
@@ -39,7 +48,13 @@ func TestChiJWTHelper_FromContext(t *testing.T) {
 			"id":  id,
 		}
 
-		helper := NewChiJWTHelper("vasco")
+		env, err := config.NewEnv(EnvPath)
+
+		if err != nil {
+			t.Errorf("got %s want %s", err, "no expected error")
+		}
+
+		helper := NewChiJWTHelper(env)
 
 		tokenString, err := helper.Encode(claimsInput)
 

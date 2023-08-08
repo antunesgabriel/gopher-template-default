@@ -8,13 +8,15 @@ import (
 
 type ChiJWTHelper struct {
 	tokenAuth *jwtauth.JWTAuth
+	env       *config.Env
 }
 
-func NewChiJWTHelper(signKey config.SignKey) *ChiJWTHelper {
-	tokenAuth := jwtauth.New("HS256", []byte(string(signKey)), nil)
+func NewChiJWTHelper(env *config.Env) *ChiJWTHelper {
+	tokenAuth := jwtauth.New("HS256", []byte(env.JWTSignKey), nil)
 
 	h := ChiJWTHelper{
 		tokenAuth: tokenAuth,
+		env:       env,
 	}
 
 	return &h

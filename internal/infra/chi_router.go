@@ -3,29 +3,29 @@ package infra
 import (
 	"github.com/antunesgabriel/gopher-template-default/internal/config"
 	"github.com/antunesgabriel/gopher-template-default/internal/delivery/api"
-	"github.com/go-chi/cors"
-	"net/http"
-	"os"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/go-chi/jwtauth/v5"
+	"net/http"
 )
 
 type ChiRouter struct {
 	mux       *chi.Mux
 	tokenAuth *jwtauth.JWTAuth
+	env       *config.Env
 }
 
-func NewChiRouter(signKey config.SignKey) *ChiRouter {
-	tokenAuth := jwtauth.New("HS256", []byte(string(signKey)), nil)
+func NewChiRouter(env *config.Env) *ChiRouter {
+	tokenAuth := jwtauth.New("HS256", []byte(env.JWTSignKey), nil)
 
 	cr := ChiRouter{
 		mux:       chi.NewRouter(),
 		tokenAuth: tokenAuth,
+		env:       env,
 	}
 
-	origin := os.Getenv("CLIENT_URL")
+	origin := env.ClientURL
 
 	cr.mux.Use(middleware.Logger)
 	cr.mux.Use(middleware.AllowContentType("application/json", "multipart/form-data"))

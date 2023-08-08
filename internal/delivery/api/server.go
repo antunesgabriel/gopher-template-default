@@ -2,10 +2,10 @@ package api
 
 import (
 	"fmt"
+	"github.com/antunesgabriel/gopher-template-default/internal/config"
 	"github.com/antunesgabriel/gopher-template-default/internal/delivery/api/controller"
 	"log"
 	"net/http"
-	"os"
 )
 
 type Server struct {
@@ -13,9 +13,11 @@ type Server struct {
 	createLocalUserController *controller.CreateLocalUserController
 	checkHealthController     *controller.CheckHealthController
 	authLocalController       *controller.AuthLocalController
+	env                       *config.Env
 }
 
 func NewServer(
+	env *config.Env,
 	router Router,
 	createLocalUserController *controller.CreateLocalUserController,
 	checkHealthController *controller.CheckHealthController,
@@ -27,23 +29,24 @@ func NewServer(
 		createLocalUserController: createLocalUserController,
 		checkHealthController:     checkHealthController,
 		authLocalController:       authLocalController,
+		env:                       env,
 	}
 
 	return &s
 }
 
-func (s *Server) Load() *Server {
-	s.router.Get("/health", s.checkHealthController.Handle)
+func (it *Server) Load() *Server {
+	it.router.Get("/health", it.checkHealthController.Handle)
 
 	log.Println("✅ /health is loaded")
 
-	s.router.Post("/users", s.createLocalUserController.Handle)
+	it.router.Post("/users", it.createLocalUserController.Handle)
 	log.Println("✅ /users is loaded")
 
-	s.router.Post("/auth/local", s.authLocalController.Handle)
+	it.router.Post("/auth/local", it.authLocalController.Handle)
 	log.Println("✅ /auth/local is loaded")
 
-	s.router.ProtectedGroup("/private", func(r RouteGroup) {
+	it.router.ProtectedGroup("/private", func(r RouteGroup) {
 		// TODO: implement protected routes
 		r.Get("/", func(writer http.ResponseWriter, request *http.Request) {
 			writer.WriteHeader(http.StatusOK)
@@ -51,13 +54,13 @@ func (s *Server) Load() *Server {
 		})
 	})
 
-	return s
+	return it
 }
 
-func (s *Server) Run(port string) error {
-	handler := s.router.Handler()
+func (it *Server) Run() error {
+	handler := it.router.Handler()
 
-	log.Printf("🚀 Server Starting on %s\n", os.Getenv("APP_URL"))
+	log.Printf("🚀 Server Starting on %s\n", it.env.AppURL)
 
-	return http.ListenAndServe(fmt.Sprintf(":%s", port), handler)
+	return http.ListenAndServe(fmt.Sprintf(":%d", it.env.Port), handler)
 }

@@ -2,17 +2,13 @@ package config
 
 import (
 	"database/sql"
-	"os"
-
 	_ "github.com/lib/pq"
 )
 
-func NewDB() (*sql.DB, error) {
-	url := os.Getenv("DATABASE_URL")
-
+func NewDB(env *Env) (*sql.DB, error) {
 	var err error
 
-	db, err := sql.Open("postgres", url)
+	db, err := sql.Open("postgres", env.DatabaseURL)
 
 	if err != nil {
 		return nil, err

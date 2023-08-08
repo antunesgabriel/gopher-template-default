@@ -34,4 +34,6 @@ generate-wire:
 	go generate ./cmd/server
 
 run-test:
-	go test $$(go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}' ./...) -cover
+	go test ./... -cover
+
+# $$(go list -f '{{if or .TestGoFiles .Xgit add .TestGoFiles}}{{.ImportPath}}{{end}}' ./...)

@@ -4,26 +4,16 @@ import (
 	"database/sql"
 	"github.com/antunesgabriel/gopher-template-default/internal/config"
 	"log"
-	"os"
-
-	"github.com/joho/godotenv"
 )
 
 func main() {
+	env, err := config.NewEnv("")
 
-	if os.Getenv("APP_ENV") != "development" {
-		err := godotenv.Load()
-
-		if err != nil {
-			log.Fatalln("Error loading .env file: ", err.Error())
-		}
+	if err != nil {
+		log.Fatalln(err)
 	}
 
-	if os.Getenv("DATABASE_URL") == "" {
-		log.Fatalln("DATABASE_URL is required")
-	}
-
-	db, err := config.NewDB()
+	db, err := config.NewDB(env)
 
 	if err != nil {
 		log.Fatal("Error on connect db:", err.Error())
@@ -36,9 +26,7 @@ func main() {
 		}
 	}(db)
 
-	signKey := config.SignKey(os.Getenv("JWT_SIGN_KEY"))
+	server := InitServer(db, env)
 
-	server := InitServer(db, signKey)
-
-	panic(server.Load().Run(os.Getenv("PORT")))
+	panic(server.Load().Run())
 }

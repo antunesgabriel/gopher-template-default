@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/antunesgabriel/gopher-template-default/internal/config"
 	"log"
 	"os"
 	"path/filepath"
@@ -17,8 +18,8 @@ func migrationDir() string {
 	return filepath.Join("scripts", "sql", "migrations")
 }
 
-func down() error {
-	connectionURL := os.Getenv("DATABASE_URL")
+func down(env *config.Env) error {
+	connectionURL := env.DatabaseURL
 
 	dir := migrationDir()
 
@@ -35,6 +36,7 @@ func down() error {
 	defer db.Close()
 
 	err = goose.Down(db, dir)
+
 	if err != nil {
 		return err
 	}
@@ -43,8 +45,8 @@ func down() error {
 	return nil
 }
 
-func up() error {
-	connectionURL := os.Getenv("DATABASE_URL")
+func up(env *config.Env) error {
+	connectionURL := env.DatabaseURL
 
 	dir := migrationDir()
 
@@ -69,7 +71,7 @@ func up() error {
 	return nil
 }
 
-func create(migrationName string) error {
+func create(env *config.Env, migrationName string) error {
 	// Generate a timestamp to use in the filename
 	timestamp := time.Now().UTC().Format("20060102150405")
 	filename := fmt.Sprintf(
@@ -112,25 +114,31 @@ func main() {
 	)
 	flag.Parse()
 
+	env, err := config.NewEnv("")
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	if action == "create" {
 		if migrationName == "" {
 			log.Fatalln("--name flag is required")
 		}
 
-		create(migrationName)
+		create(env, migrationName)
 
 		return
 	}
 
 	if action == "down" {
-		if err := down(); err != nil {
+		if err := down(env); err != nil {
 			log.Fatalln(err)
 		}
 
 		return
 	}
 
-	if err := up(); err != nil {
+	if err := up(env); err != nil {
 		log.Fatalln(err)
 	}
 }

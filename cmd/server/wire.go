@@ -51,7 +51,7 @@ var HelperSet = wire.NewSet(
 	infra.NewChiJWTHelper,
 )
 
-func InitServer(db *sql.DB, signKey config.SignKey) *api.Server {
+func InitServer(db *sql.DB, env *config.Env) *api.Server {
 	wire.Build(
 		ServerSet,
 		UseCaseSet,
