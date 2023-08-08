@@ -16,6 +16,8 @@ type User struct {
 	UpdatedAt *time.Time `json:"updated_at,omitempty"`
 }
 
+// TODO: add verification user account
+
 func NewUser(id int64, name, email, provider, password string) *User {
 	u := User{
 		ID:       id,
