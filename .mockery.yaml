@@ -1,0 +1,17 @@
+with-expecter: True
+quiet: False
+disable-version-string: True
+filename: "mock_{{.InterfaceNameSnake}}.go"
+mockname: "Mock{{.InterfaceName}}"
+outpkg: "mocks"
+dir: "./test/mocks"
+packages:
+    github.com/antunesgabriel/gopher-template-default/internal/helper:
+      config:
+        all: true
+    github.com/antunesgabriel/gopher-template-default/internal/application/repository:
+      config:
+        all: true
+    github.com/antunesgabriel/gopher-template-default/internal/delivery/api:
+      config:
+        all: true

@@ -1,29 +1,46 @@
-package usecase
+package usecase_test
 
 import (
+	"context"
 	"errors"
-	"github.com/antunesgabriel/gopher-template-default/test/mock"
+	"github.com/antunesgabriel/gopher-template-default/internal/application/usecase"
+	"github.com/antunesgabriel/gopher-template-default/test/mocks"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestCheckHealthUseCase(t *testing.T) {
 	t.Run("it should called HealthRepository correctly", func(t *testing.T) {
-		m := mock.MockHealthRepository{
-			nil,
-		}
+		expect := assert.New(t)
 
-		usecase := NewCheckHealthUseCase(&m)
+		repoMocked := mocks.NewMockHealthRepository(t)
 
-		if err := usecase.Execute(); err != nil {
-			t.Errorf("got %s want %s", err, "nil")
-		}
+		uc := usecase.NewCheckHealthUseCase(repoMocked)
 
-		errTst := errors.New("vasco")
+		ctx := context.Background()
 
-		m.Return = errTst
+		repoMocked.EXPECT().Ping(ctx).Return(nil)
 
-		if err := usecase.Execute(); err == nil || !errors.Is(err, errTst) {
-			t.Errorf("got %s want %s", err, errTst)
-		}
+		err := uc.Execute()
+
+		expect.Nil(err)
+	})
+
+	t.Run("it should return error if database have any problems", func(t *testing.T) {
+		expect := assert.New(t)
+
+		repoMocked := mocks.NewMockHealthRepository(t)
+
+		uc := usecase.NewCheckHealthUseCase(repoMocked)
+
+		ctx := context.Background()
+
+		errExpected := errors.New("some error")
+
+		repoMocked.EXPECT().Ping(ctx).Return(errExpected)
+
+		err := uc.Execute()
+
+		expect.ErrorIs(err, errExpected)
 	})
 }
