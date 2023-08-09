@@ -35,7 +35,7 @@ func (it AuthLocalController) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := it.usecase.Execute(input)
+	token, err := it.usecase.Execute(&input)
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")

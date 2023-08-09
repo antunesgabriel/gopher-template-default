@@ -25,7 +25,7 @@ func NewLocalAuthUseCase(userRepository repository.UserRepository, jwtHelper hel
 	return &uc
 }
 
-func (it *LocalAuthUseCase) Execute(input dto.LocalAuthInput) (string, error) {
+func (it *LocalAuthUseCase) Execute(input *dto.LocalAuthInput) (string, error) {
 	ctx := context.Background()
 
 	user, err := it.repository.FindUserByEmail(ctx, input.Email)
