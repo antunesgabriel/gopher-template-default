@@ -1,22 +1,19 @@
-package usecase
+package usecase_test
 
 import (
-	"encoding/json"
-	"errors"
+	"context"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/dto"
+	"github.com/antunesgabriel/gopher-template-default/internal/application/usecase"
 	"github.com/antunesgabriel/gopher-template-default/internal/domain"
 	"github.com/antunesgabriel/gopher-template-default/internal/domain/entity"
-	"github.com/antunesgabriel/gopher-template-default/test/mock"
+	"github.com/antunesgabriel/gopher-template-default/test/mocks"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestCreateLocalUserUseCase(t *testing.T) {
-	t.Run("it should not send invalid users to the repository", func(t *testing.T) {
-		validUser := dto.CreateUserLocalInput{
-			Name:     "Valid User",
-			Email:    "valid@email.com",
-			Password: "password",
-		}
+	t.Run("it should return error if user is invalid", func(t *testing.T) {
+		expect := assert.New(t)
 
 		invalidUser := dto.CreateUserLocalInput{
 			Name:     "Invalid User",
@@ -24,73 +21,24 @@ func TestCreateLocalUserUseCase(t *testing.T) {
 			Password: "password",
 		}
 
-		mockRepository := mock.NewMockUserRepository()
+		mockRepository := mocks.NewMockUserRepository(t)
 
-		mockHelper := mock.NewMockPasswordHelper("#4asd3", true)
+		mockPasswordHelper := mocks.NewMockPasswordHelper(t)
 
-		uc := NewCreateLocalUserUseCase(mockRepository, mockHelper)
+		uc := usecase.NewCreateLocalUserUseCase(mockRepository, mockPasswordHelper)
 
-		if err := uc.Execute(&invalidUser); err == nil || !errors.Is(err, domain.InvalidEmailError) {
-			t.Errorf("got %s want %s", err, domain.InvalidEmailError)
-		}
+		err := uc.Execute(&invalidUser)
 
-		if err := uc.Execute(&validUser); err != nil {
-			t.Errorf("got %s want %s", err, "no error expected")
-		}
-
-		for _, user := range mockRepository.Users {
-			if user.Name == "invalid user" {
-				b, _ := json.Marshal(user)
-
-				t.Errorf("got %s want %s", b, "any user")
-			}
-		}
-	})
-
-	t.Run("it should encrypt user password before pass to repository", func(t *testing.T) {
-		userInput := dto.CreateUserLocalInput{
-			Name:     "Archimedes",
-			Email:    "archimedes@gopher.io",
-			Password: "eureka",
-		}
-
-		mockRepository := mock.NewMockUserRepository()
-
-		mockHelper := mock.NewMockPasswordHelper("#4asd3", true)
-
-		uc := NewCreateLocalUserUseCase(mockRepository, mockHelper)
-
-		if err := uc.Execute(&userInput); err != nil {
-			t.Errorf("got %s want %s", err, "no error expected")
-		}
-
-		var storedUser *entity.User
-
-		for _, user := range mockRepository.Users {
-			if user.Name == "Archimedes" {
-				storedUser = user
-			}
-		}
-
-		if storedUser == nil {
-			t.Errorf("got %s want %s", "user don't stored", "user stored")
-		}
-
-		if storedUser.Password != string(mockHelper.Hashed) {
-			t.Errorf("got %s want %s", storedUser.Password, string(mockHelper.Hashed))
-		}
+		expect.ErrorIs(err, domain.InvalidEmailError)
 	})
 
 	t.Run("it should return error UserAlreadyExistError if user already exist", func(t *testing.T) {
-		mockRepository := mock.NewMockUserRepository()
+		expect := assert.New(t)
+
+		mockRepository := mocks.NewMockUserRepository(t)
+		mockPasswordHelper := mocks.NewMockPasswordHelper(t)
 
 		email := "mouse@email.com"
-
-		mockRepository.Users = []*entity.User{
-			entity.NewUser(3, "Mouse", email, "", "password"),
-		}
-
-		mockHelper := mock.NewMockPasswordHelper("#4asd3", true)
 
 		userInput := dto.CreateUserLocalInput{
 			Name:     "Another Mouse",
@@ -98,10 +46,47 @@ func TestCreateLocalUserUseCase(t *testing.T) {
 			Password: "password",
 		}
 
-		uc := NewCreateLocalUserUseCase(mockRepository, mockHelper)
+		ctx := context.Background()
 
-		if err := uc.Execute(&userInput); err == nil || !errors.Is(err, domain.UserAlreadyExistError) {
-			t.Errorf("got %s want %s", err, domain.UserAlreadyExistError)
-		}
+		returns := entity.NewUser(0, "Mouse", email, "", "secret")
+
+		mockRepository.EXPECT().FindUserByEmail(ctx, email).Return(returns, nil)
+
+		uc := usecase.NewCreateLocalUserUseCase(mockRepository, mockPasswordHelper)
+
+		err := uc.Execute(&userInput)
+
+		expect.ErrorIs(err, domain.UserAlreadyExistError)
 	})
+
+	t.Run("it should calls UserRepository to create new user if he's is valid and hash with his password encrypted", func(t *testing.T) {
+		expect := assert.New(t)
+
+		userInput := dto.CreateUserLocalInput{
+			Name:     "Archimedes",
+			Email:    "archimedes@gopher.io",
+			Password: "eureka",
+		}
+
+		mockRepository := mocks.NewMockUserRepository(t)
+		mockPasswordHelper := mocks.NewMockPasswordHelper(t)
+
+		passwordEncrypted := "xpto"
+
+		ctx := context.Background()
+
+		userExpected := entity.NewUser(0, userInput.Name, userInput.Email, "", passwordEncrypted)
+
+		mockPasswordHelper.EXPECT().Hash(userInput.Password).Return([]byte(passwordEncrypted), nil)
+		mockRepository.EXPECT().FindUserByEmail(ctx, userInput.Email).Return(nil, nil)
+
+		mockRepository.EXPECT().Create(ctx, userExpected).Return(nil)
+
+		uc := usecase.NewCreateLocalUserUseCase(mockRepository, mockPasswordHelper)
+
+		err := uc.Execute(&userInput)
+
+		expect.Nil(err)
+	})
+
 }

@@ -27,18 +27,18 @@ func NewCreateLocalUserUseCase(repository repository.UserRepository, passwordHel
 func (it *CreateLocalUserUseCase) Execute(input *dto.CreateUserLocalInput) error {
 	ctx := context.Background()
 
-	exist, err := it.repository.FindUserByEmail(ctx, input.Email)
-
-	if exist != nil {
-		return domain.UserAlreadyExistError
-	}
-
 	u := entity.NewUser(0, input.Name, input.Email, "", input.Password)
 
-	err = u.ValidateNewLocalUser()
+	err := u.ValidateNewLocalUser()
 
 	if err != nil {
 		return err
+	}
+
+	exist, err := it.repository.FindUserByEmail(ctx, u.Email)
+
+	if exist != nil {
+		return domain.UserAlreadyExistError
 	}
 
 	passBytes, err := it.passwordHelper.Hash(u.Password)

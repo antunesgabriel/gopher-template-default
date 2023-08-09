@@ -19,7 +19,7 @@ func TestCheckHealthUseCase(t *testing.T) {
 
 		ctx := context.Background()
 
-		repoMocked.EXPECT().Ping(ctx).Return(nil)
+		repoMocked.EXPECT().Ping(ctx).Return(nil).Times(1)
 
 		err := uc.Execute()
 
@@ -37,7 +37,7 @@ func TestCheckHealthUseCase(t *testing.T) {
 
 		errExpected := errors.New("some error")
 
-		repoMocked.EXPECT().Ping(ctx).Return(errExpected)
+		repoMocked.EXPECT().Ping(ctx).Return(errExpected).Times(1)
 
 		err := uc.Execute()
 
