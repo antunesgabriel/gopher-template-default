@@ -1,17 +1,25 @@
-package controller
+package controller_test
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/usecase"
-	m "github.com/antunesgabriel/gopher-template-default/test/mock"
+	"github.com/antunesgabriel/gopher-template-default/internal/delivery/api/controller"
+	"github.com/antunesgabriel/gopher-template-default/test/mocks"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestCheckHealthController_Handle(t *testing.T) {
-	t.Run("it should response up true if db is up", func(t *testing.T) {
+	t.Run("it should response up true if db is up and false if db is down", func(t *testing.T) {
+		expect := assert.New(t)
+
+		mockHealthRepository := mocks.NewMockHealthRepository(t)
+		uc := usecase.NewCheckHealthUseCase(mockHealthRepository)
+
 		req, err := http.NewRequest(http.MethodGet, "/health", nil)
 
 		if err != nil {
@@ -20,82 +28,62 @@ func TestCheckHealthController_Handle(t *testing.T) {
 
 		rr := httptest.NewRecorder()
 
-		ucDBUp := newMockUseCase(nil)
-		controller := NewCheckHealthController(ucDBUp)
+		ctrl := controller.NewCheckHealthController(uc)
 
-		controller.Handle(rr, req)
+		response := struct {
+			Error string `json:"error"`
+			Data  struct {
+				Up bool `json:"up"`
+			} `json:"data"`
+		}{}
 
-		response := checkHealthControllerResponse{}
+		ctx := context.Background()
+
+		mockHealthRepository.EXPECT().Ping(ctx).Return(nil)
+
+		ctrl.Handle(rr, req)
 
 		err = json.NewDecoder(rr.Body).Decode(&response)
 
-		if err != nil {
-			t.Errorf("got %s want %s", err, "no error")
-		}
+		expect.Nil(err)
 
-		if rr.Code != http.StatusOK {
-			t.Errorf("got %d want %d", rr.Code, http.StatusOK)
-		}
-
-		if response.Error != "" {
-			t.Errorf("got %s want %s", response.Error, "error should to be empty")
-		}
-
-		if response.Data.Up != true {
-			t.Errorf("got %t want %t", response.Data.Up, true)
-		}
+		expect.Equal(rr.Code, http.StatusOK)
+		expect.Empty(response.Error)
+		expect.True(response.Data.Up)
 	})
 
 	t.Run("it should response up false if db is down", func(t *testing.T) {
+		expect := assert.New(t)
+
+		mockHealthRepository := mocks.NewMockHealthRepository(t)
+		uc := usecase.NewCheckHealthUseCase(mockHealthRepository)
+
 		req, err := http.NewRequest(http.MethodGet, "/health", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
+
+		expect.Nil(err)
 
 		rr := httptest.NewRecorder()
 
-		response := checkHealthControllerResponse{}
+		ctrl := controller.NewCheckHealthController(uc)
 
-		usDBDown := newMockUseCase(errors.New("db_down"))
-		controller := NewCheckHealthController(usDBDown)
+		response := struct {
+			Error string `json:"error"`
+			Data  struct {
+				Up bool `json:"up"`
+			} `json:"data"`
+		}{}
 
-		controller.Handle(rr, req)
+		ctx := context.Background()
+		mockHealthRepository.EXPECT().Ping(ctx).Return(errors.New("some error"))
+
+		ctrl.Handle(rr, req)
 
 		err = json.NewDecoder(rr.Body).Decode(&response)
 
-		if err != nil {
-			t.Errorf("got %s want %s", err, "no error")
-		}
+		expect.Nil(err)
 
-		if rr.Code != http.StatusInternalServerError {
-			t.Errorf("got %d want %d", rr.Code, http.StatusInternalServerError)
-		}
-
-		if response.Error == "" {
-			t.Errorf("got %s want %s", response.Error, "db_down")
-		}
-
-		if response.Data.Up != false {
-			t.Errorf("got %t want %t", response.Data.Up, false)
-		}
+		expect.Equal(rr.Code, http.StatusInternalServerError)
+		expect.Equal(response.Error, "some error")
+		expect.False(response.Data.Up)
 	})
-}
-
-type upField struct {
-	Up bool `json:"up"`
-}
-
-type checkHealthControllerResponse struct {
-	Error string  `json:"error,omitempty"`
-	Data  upField `json:"data,omitempty"`
-}
-
-func newMockUseCase(err error) *usecase.CheckHealthUseCase {
-	r := m.MockHealthRepository{
-		Return: err,
-	}
-
-	u := usecase.NewCheckHealthUseCase(&r)
-
-	return u
 }
