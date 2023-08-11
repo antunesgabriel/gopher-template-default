@@ -40,8 +40,8 @@ func (it *Server) Load() *Server {
 
 	log.Println("✅ /health is loaded")
 
-	it.router.Post("/users", it.createLocalUserController.Handle)
-	log.Println("✅ /users is loaded")
+	it.router.Post("/signup/local", it.createLocalUserController.Handle)
+	log.Println("✅ /signup/local is loaded")
 
 	it.router.Post("/auth/local", it.authLocalController.Handle)
 	log.Println("✅ /auth/local is loaded")

@@ -1,109 +1,121 @@
-package controller
+package controller_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/dto"
 	"github.com/antunesgabriel/gopher-template-default/internal/application/usecase"
+	"github.com/antunesgabriel/gopher-template-default/internal/delivery/api/controller"
 	"github.com/antunesgabriel/gopher-template-default/internal/domain"
-	"github.com/antunesgabriel/gopher-template-default/test/mock"
+	"github.com/antunesgabriel/gopher-template-default/internal/domain/entity"
+	"github.com/antunesgabriel/gopher-template-default/test/mocks"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestCreateLocalUserController_Handle(t *testing.T) {
-	t.Run("it should correctly answer when the username is invalid", func(t *testing.T) {
-		input := dto.CreateUserLocalInput{
-			Name:     "Antunes",
-			Email:    "this is not a valid email",
+	t.Run("it should return the correct response payload if you get an error when trying to register a user", func(t *testing.T) {
+		expect := assert.New(t)
+
+		mockUserRepository := mocks.NewMockUserRepository(t)
+		mockPasswordHelper := mocks.NewMockPasswordHelper(t)
+		uc := usecase.NewCreateLocalUserUseCase(mockUserRepository, mockPasswordHelper)
+
+		ctrl := controller.NewCreateLocalUserController(uc)
+
+		fakeUserStored := entity.NewUser(1, "Jhon", "jhon@email.com", "", "hashed")
+
+		createNewUserInput := dto.CreateUserLocalInput{
+			Name:     "Another Jhon",
+			Email:    fakeUserStored.Email,
 			Password: "xpto",
 		}
 
-		invalidUser, err := json.Marshal(input)
+		bodyBytes, err := json.Marshal(createNewUserInput)
 
-		if err != nil {
-			t.Errorf("got %s want %s", err, "no error expected")
-		}
+		expect.Nil(err)
 
-		req, err := http.NewRequest(http.MethodPost, "/users", bytes.NewReader(invalidUser))
+		req, err := http.NewRequest(http.MethodPost, "/signup/local", bytes.NewReader(bodyBytes))
 
-		if err != nil {
-			t.Errorf("got %s want %s", err, "no error expected")
-		}
+		expect.Nil(err)
 
 		rr := httptest.NewRecorder()
 
-		controller := buildController()
+		ctx := context.Background()
 
-		controller.Handle(rr, req)
+		mockUserRepository.EXPECT().FindUserByEmail(ctx, createNewUserInput.Email).Return(fakeUserStored, nil)
+
+		ctrl.Handle(rr, req)
 
 		response := dto.Response{}
 
 		err = json.NewDecoder(rr.Body).Decode(&response)
 
-		if err != nil {
-			t.Errorf("got %s want %s", err, "no error expected")
-		}
-
-		if rr.Code != http.StatusBadRequest {
-			t.Errorf("got %d want %d", rr.Code, http.StatusBadRequest)
-		}
-
-		if response.Error != domain.InvalidEmailError.Error() {
-			t.Errorf("got %s want %s", response.Error, domain.InvalidEmailError)
-		}
+		expect.Nil(err)
+		expect.Equal(response.Error, domain.UserAlreadyExistError.Error())
+		expect.Equal(rr.Code, http.StatusBadRequest)
 	})
 
-	t.Run("it should answer with correctly status code when user was validated and stored with successfully", func(t *testing.T) {
-		input := dto.CreateUserLocalInput{
-			Name:     "Antunes",
-			Email:    "json@email.io",
-			Password: "xpto",
+	t.Run("it should create user and returns correct code if new user input is valid", func(t *testing.T) {
+		expect := assert.New(t)
+
+		mockUserRepository := mocks.NewMockUserRepository(t)
+		mockPasswordHelper := mocks.NewMockPasswordHelper(t)
+		uc := usecase.NewCreateLocalUserUseCase(mockUserRepository, mockPasswordHelper)
+
+		ctrl := controller.NewCreateLocalUserController(uc)
+
+		createNewUserInput := dto.CreateUserLocalInput{
+			Name:     "Nana Cat",
+			Email:    "nana@catspace.io",
+			Password: "secret",
 		}
 
-		validUser, err := json.Marshal(input)
+		bodyBytes, err := json.Marshal(createNewUserInput)
 
-		if err != nil {
-			t.Errorf("got %s want %s", err, "no error expected")
-		}
+		expect.Nil(err)
 
-		req, err := http.NewRequest(http.MethodPost, "/users", bytes.NewReader(validUser))
+		req, err := http.NewRequest(http.MethodPost, "/signup/local", bytes.NewReader(bodyBytes))
 
-		if err != nil {
-			t.Errorf("got %s want %s", err, "no error expected")
-		}
+		expect.Nil(err)
 
 		rr := httptest.NewRecorder()
 
-		controller := buildController()
+		ctx := context.Background()
 
-		controller.Handle(rr, req)
+		mockUserRepository.EXPECT().FindUserByEmail(
+			ctx,
+			createNewUserInput.Email,
+		).Return(nil, nil)
+
+		hashedPassword := []byte("encrypted password")
+
+		mockPasswordHelper.EXPECT().Hash(createNewUserInput.Password).Return(
+			hashedPassword,
+			nil,
+		)
+
+		newUserExpectedParams := entity.NewUser(
+			0,
+			createNewUserInput.Name,
+			createNewUserInput.Email,
+			"",
+			string(hashedPassword),
+		)
+
+		mockUserRepository.EXPECT().Create(ctx, newUserExpectedParams).Return(nil)
+
+		ctrl.Handle(rr, req)
 
 		response := dto.Response{}
 
 		err = json.NewDecoder(rr.Body).Decode(&response)
 
-		if err != nil {
-			t.Errorf("got %s want %s", err, "no error expected")
-		}
-
-		if rr.Code != http.StatusCreated {
-			t.Errorf("got %d want %d", rr.Code, http.StatusCreated)
-		}
-
-		if response.Error != "" {
-			t.Errorf("got %s want %s", response.Error, "empty error field")
-		}
+		expect.Nil(err)
+		expect.Equal(rr.Code, http.StatusCreated)
+		expect.Empty(response.Error)
 	})
-}
-
-func buildController() *CreateLocalUserController {
-	r := mock.NewMockUserRepository()
-	h := mock.NewMockPasswordHelper("#4asd3", true)
-	u := usecase.NewCreateLocalUserUseCase(r, h)
-
-	controller := NewCreateLocalUserController(u)
-
-	return controller
 }
